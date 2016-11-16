@@ -1,0 +1,5 @@
+C:\Users\ynad9\Desktop\Server\bin\Release\Server.exe.config
+C:\Users\ynad9\Desktop\Server\bin\Release\Server.exe
+C:\Users\ynad9\Desktop\Server\bin\Release\Server.pdb
+C:\Users\ynad9\Desktop\Server\obj\Release\Server.exe
+C:\Users\ynad9\Desktop\Server\obj\Release\Server.pdb
