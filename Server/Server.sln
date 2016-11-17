@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server.csproj", "{841DAD7C-427C-4F5A-9E39-4EE71EFE81D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Riversi.CSharp", "..\Riversi\Riversi.CSharp.csproj", "{62274BE9-65EA-CB55-D0E3-D71201C829E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Othello.CSharp", "..\Othello\Othello.CSharp.csproj", "{62274BE9-65EA-CB55-D0E3-D71201C829E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

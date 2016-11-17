@@ -16,3 +16,6 @@ E:\Proiecte\Unity\Server\obj\Debug\Server.pdb
 E:\Proiecte\Unity\Server\bin\Debug\Server.exe
 E:\Proiecte\Unity\Server\bin\Debug\Server.pdb
 E:\Proiecte\Unity\Server\obj\Debug\Server.csprojResolveAssemblyReference.cache
+E:\Proiecte\Git\Othello\Server\bin\Debug\Server.exe.config
+E:\Proiecte\Git\Othello\Server\obj\Debug\Server.exe
+E:\Proiecte\Git\Othello\Server\obj\Debug\Server.pdb
