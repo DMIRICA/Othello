@@ -12,21 +12,63 @@ namespace Server.Entities
         private string _Username;
         private string _Password;
         private string _Email;
-        
+
 
         public User() { }
 
         public User(int ID, string Username, string Password, string Email)
         {
-            this._ID = ID;
+            this.ID = ID;
             this._Username = Username;
             this._Password = Password;
             this._Email = Email;
         }
 
-        public int ID { get => _ID; set => _ID = value; }
-        public string Username { get => _Username; set => _Username = value; }
-        public string Password { get => _Password; set => _Password = value; }
-        public string Email { get => _Email; set => _Email = value; }
+        public int ID
+        {
+            get
+            {
+                return _ID;
+            }
+            set
+            {
+                _ID = value;
+            }
+        }
+        public string Username
+        {
+            get
+            {
+                return _Username;
+            }
+            set
+            {
+                _Username = value;
+            }
+        }
+
+        public string Password
+        {
+            get
+            {
+                return _Password;
+            }
+            set
+            {
+                _Password = value;
+            }
+        }
+
+        public string Email
+        {
+            get
+            {
+                return _Email;
+            }
+            set
+            {
+                _Email = value;
+            }
+        }
     }
 }

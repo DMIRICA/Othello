@@ -61,7 +61,11 @@ namespace Server.Singleton
         }
 
 
-        public DatabaseConnection DatabaseConnection { get => _DatabaseConnection; set => _DatabaseConnection = value; }
+        public DatabaseConnection DatabaseConnection
+        {
+            get { return _DatabaseConnection; }
+            set { _DatabaseConnection = value; }
+        }
 
     }
 }
