@@ -14,7 +14,6 @@ namespace Server.Packets
         public BoardPacket(byte[] packet) : base(packet)
         {
             BoardTable = ToCharArray(packet);
-
         }
         public BoardPacket(ushort PacketID,Room room) : 
             base(PacketID, (ushort)(4+(room.Gameboard.Gameboard.GetLength(0) * room.Gameboard.Gameboard.GetLength(1) * 2)))

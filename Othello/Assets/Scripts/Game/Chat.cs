@@ -5,6 +5,7 @@ using System.Text;
 using Assets.Scripts.Networking.GamePackets;
 using UnityEngine;
 using UnityEngine.UI;
+using Assets.Scripts.Networking.Packets.GamePackets;
 
 namespace Assets.Scripts.Game
 {
@@ -52,7 +53,7 @@ namespace Assets.Scripts.Game
             string s = "You:" + Singleton.Singleton.Instance.MessageTyped + '\n';
             ChatBox.text += s;
             s = Singleton.Singleton.Instance.DiskColor+"Player: " + Singleton.Singleton.Instance.MessageTyped + '\n';
-            ChatMessage MessageToSend = new ChatMessage(Singleton.Singleton.Instance.RoomID,s);
+            RoomChatMessage MessageToSend = new RoomChatMessage(Singleton.Singleton.Instance.RoomID,s);
             Singleton.Singleton.Instance.Connection.SendPacket(MessageToSend.getData());
         }
         

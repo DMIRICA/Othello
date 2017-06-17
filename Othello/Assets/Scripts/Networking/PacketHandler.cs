@@ -1,5 +1,7 @@
 ﻿using Assets.Scripts.Game;
 using Assets.Scripts.Networking.GamePackets;
+using Assets.Scripts.Networking.Packets;
+using Assets.Scripts.Networking.Packets.GamePackets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,14 +21,41 @@ namespace Assets.Scripts.Networking
 
             switch (packetType)
             {
-                case 100: // CHAT MESSAGE
-                    ChatMessage Message = new ChatMessage(packet);
-                    
+
+                case 101: //SUCCESS LOGIN
+                    LoginScript.LoadGameScene();
+                    break;
+
+                case 102: //FAILED LOGIN
+                    LoginScript.LoginFailed();
+                    break;
+
+                case 111: //SUCCESS REGISTER
+                    BasicPacket SuccessRegisterPacket = new BasicPacket(packet);
+                    SuccessRegisterPacket.RunInMainThread(SuccessRegisterPacket.SuccessRegister());
+                    break;
+
+                case 112: //FAILED REGISTER
+                    BasicPacket FailedRegisterPacket = new BasicPacket(packet);
+                    FailedRegisterPacket.RunInMainThread(FailedRegisterPacket.FailedRegister());
+                    break;
+
+                case 113: //USERNAME ALREADY USED
+                    BasicPacket UsernameUsedPacket = new BasicPacket(packet);
+                    UsernameUsedPacket.RunInMainThread(UsernameUsedPacket.UsernameUsed());
+                    break;
+
+                case 114: //EMAIL ALREADY USED
+                    BasicPacket EmailUsedPacket = new BasicPacket(packet);
+                    EmailUsedPacket.RunInMainThread(EmailUsedPacket.EmailUsed());
+                    break;
+
+                case 200: //CHAT MESSAGE
+                    RoomChatMessage Message = new RoomChatMessage(packet);
                     break;
                 
                 case 401: // STARTGAME MESSAGE EX: False|R or True|B
                     GamePacket startPacket = new GamePacket(packet);
-                    
                     break;
 
                 case 400: // BOARDGAME ARRAY

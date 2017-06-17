@@ -1,4 +1,5 @@
-﻿using Server.Game;
+﻿using Server.database;
+using Server.Game;
 using Server.Packets;
 using Server.Protocol;
 using System;
@@ -9,8 +10,10 @@ using System.Threading.Tasks;
 
 namespace Server.Singleton
 {
-    public class Singleton
-    {
+   class Singleton
+   {
+
+        private DatabaseConnection _DatabaseConnection;
         private static Singleton _Instance;
         public List<Room> ListOfRooms;
         public List<Player> ListOfPlayers;
@@ -28,10 +31,19 @@ namespace Server.Singleton
             }
         }
 
+        public void addNewRoom()
+        {
+            Room room = new Room(ListOfPlayers[0], 
+                ListOfPlayers[1],RoomIDHelper);
+            ListOfRooms.Add(room);
+            RoomIDHelper++;
+        }
+
         private Singleton()
         {
             ListOfRooms = new List<Room>();
             ListOfPlayers = new List<Player>();
+            _DatabaseConnection = new DatabaseConnection();
             RoomIDHelper = 0;
         }
 
@@ -48,6 +60,8 @@ namespace Server.Singleton
             return null;
         }
 
+
+        public DatabaseConnection DatabaseConnection { get => _DatabaseConnection; set => _DatabaseConnection = value; }
 
     }
 }
