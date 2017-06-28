@@ -106,9 +106,12 @@ public class LoginScript : MonoBehaviour
 
     public static void LoadGameScene()
     {
+
+        
+
         UnityMainThreadDispatcher.Enqueue(() =>
         {
-            SceneManager.LoadScene("GameScene");
+            SceneManager.LoadScene("MainScene");
         });
     }
 

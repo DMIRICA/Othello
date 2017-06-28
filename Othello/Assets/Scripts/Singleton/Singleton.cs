@@ -9,10 +9,11 @@ using System.Security.Cryptography;
 using System;
 using System.Text;
 using System.Linq;
+using Assets.Scripts.Entities;
 
 namespace Assets.Scripts.Singleton
 {
-    public class Singleton
+    class Singleton
     { 
 
         #region UI Elements
@@ -36,6 +37,8 @@ namespace Assets.Scripts.Singleton
         //Sprites
         public List<Sprite> sprites;
 
+        private List<User> _UsersLoggedList;
+
         #endregion
 
         #region Variables
@@ -50,6 +53,13 @@ namespace Assets.Scripts.Singleton
         #endregion
 
         #region Methods
+
+        private Singleton()
+        {
+            _LegalMoves = new List<BoardPosition>();
+            _Connection = new ClientConnection();
+            UsersLoggedList = new List<User>();
+        }
 
         #region GET/SET
         public static Singleton Instance
@@ -147,23 +157,32 @@ namespace Assets.Scripts.Singleton
             }
         }
 
+        internal List<User> UsersLoggedList
+        {
+            get
+            {
+                return _UsersLoggedList;
+            }
+
+            set
+            {
+                _UsersLoggedList = value;
+            }
+        }
+
 
         #endregion
 
-       // void Awake()
-       // {
+        // void Awake()
+        // {
         //    //_Instance = this;
-            //_LegalMoves = new List<BoardPosition>();
-           // _Connection = new ClientConnection();
-            //BlackChips.text = 0.ToString();
-            //RedChips.text = 0.ToString();
+        //_LegalMoves = new List<BoardPosition>();
+        // _Connection = new ClientConnection();
+        //BlackChips.text = 0.ToString();
+        //RedChips.text = 0.ToString();
         //}
 
-        private Singleton()
-        {
-            _LegalMoves = new List<BoardPosition>();
-            _Connection = new ClientConnection();
-        }
+
 
         void OnApplicationQuit()
         {

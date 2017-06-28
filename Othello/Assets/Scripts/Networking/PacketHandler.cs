@@ -50,6 +50,16 @@ namespace Assets.Scripts.Networking
                     EmailUsedPacket.RunInMainThread(EmailUsedPacket.EmailUsed());
                     break;
 
+                case 120: //USERS LIST AFTER LOGIN
+                    MessagePacket messagePacket = new MessagePacket(packet);
+                    messagePacket.RunInMainThread(messagePacket.loadMainScene());
+                    break;
+
+                case 121: //NEW USER LOGIN - ADD HIM TO LIST
+                    messagePacket = new MessagePacket(packet);
+                    messagePacket.RunInMainThread(messagePacket.addNewUserLoggedToList());
+                    break;
+
                 case 200: //CHAT MESSAGE
                     RoomChatMessage Message = new RoomChatMessage(packet);
                     break;

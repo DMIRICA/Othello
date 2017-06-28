@@ -65,8 +65,9 @@ namespace Assets.Scripts.Utils
         private static void AddDispatcherToScene()
         {
             var dispatcherContainer = new GameObject("UnityMainThreadDispatcher");
-
+#if UNITY_EDITOR
             DontDestroyOnLoad(dispatcherContainer);
+#endif
             dispatcherContainer.AddComponent<UnityMainThreadDispatcher>();
         }
 
