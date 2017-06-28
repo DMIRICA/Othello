@@ -65,6 +65,7 @@
     <Compile Include="MainProgram.cs" />
     <Compile Include="Packets\BasicPacket.cs" />
     <Compile Include="Packets\BoardPacket.cs" />
+    <Compile Include="Packets\MessagePacket.cs" />
     <Compile Include="Packets\RoomChatPacket.cs" />
     <Compile Include="Packets\GamePacket.cs" />
     <Compile Include="Packets\LoginPacket.cs" />

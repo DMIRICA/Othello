@@ -58,10 +58,14 @@ namespace Othello
             Console.WriteLine("Client connected, waiting for request...");
             _ClientSockets.Add(socket);
             Singleton.Instance.ListOfPlayers.Insert(0,new Player(socket));
+            /*
             if (Singleton.Instance.ListOfPlayers.Count % 2 == 0)
             {
                 Singleton.Instance.addNewRoom();
             }
+            socket.BeginReceive(_Buffer, 0, _BUFFER_SIZE, SocketFlags.None, ReceiveCallback, socket);
+            _ServerSocket.BeginAccept(AcceptCallback, null);
+            */
             socket.BeginReceive(_Buffer, 0, _BUFFER_SIZE, SocketFlags.None, ReceiveCallback, socket);
             _ServerSocket.BeginAccept(AcceptCallback, null);
         }
@@ -79,9 +83,7 @@ namespace Othello
                 {
                     byte[] recBuf = new byte[received];
                     Array.Copy(_Buffer, recBuf, received);
-                    Console.WriteLine("Received a package");
                     PacketHandler.Handle(recBuf, current);
-                    Console.WriteLine("Handle the package");
                     if (current.Connected)
                     {
                         current.BeginReceive(_Buffer, 0, _BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current);
@@ -102,9 +104,7 @@ namespace Othello
         {
             try
             {
-                Console.WriteLine("Sending a package");
                 clientSocket.BeginSend(packet, 0, packet.Length, SocketFlags.None, SendCallBack, clientSocket);
-                Console.WriteLine("Send a package");
             }
             catch (SocketException e)
             {

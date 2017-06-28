@@ -53,7 +53,17 @@ namespace Server.Protocol
         }
         #endregion
 
-        
+        #region After Login packets
+        public static ushort UsersLoggedListPacketID()
+        {
+            return 120;
+        }
+
+        public static ushort AlertUsersNewUserLoggedID()
+        {
+            return 121;
+        }
+        #endregion
 
         public static ushort ChatMessagePacketID()
         {

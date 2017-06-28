@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using Server.Entities;
 
 namespace Server.Packets
 {
@@ -16,21 +17,6 @@ namespace Server.Packets
         public LoginPacket(byte[] packet) : base(packet)
         {
             Message = ReadString(4, packet.Length - 4);
-            string[] fields = Message.Split('|');
-            string username = fields[0];
-            string password = fields[1];
-            bool match = Singleton.Singleton.Instance.DatabaseConnection.isPasswordRight(username, password);
-            if (match)
-            {
-                //responseBack(clientSocket, GameProtocol.SuccesLoginPackedID());
-                //Othello.Server.SendPacket(clientSocket, new BasicPacket(GameProtocol.SuccesLoginPackedID()).getData());
-            }
-            else
-            {
-                //responseBack(clientSocket, GameProtocol.FailedLoginPacketID());
-                //Othello.Server.SendPacket(clientSocket, new BasicPacket(GameProtocol.FailedLoginPacketID()).getData());
-              // Othello.Server.SendPacket(clientSocket, packet);
-            }
         }
 
         public void doLogin(Socket clientSocket)
@@ -38,19 +24,29 @@ namespace Server.Packets
             string[] fields = Message.Split('|');
             string username = fields[0];
             string password = fields[1];
-            bool match = Singleton.Singleton.Instance.DatabaseConnection.isPasswordRight(username, password);
-            if (match)
+            User user = Singleton.Singleton.Instance.DatabaseConnection.isPasswordRight(username, password);
+            if (user != null)
             {
-                //responseBack(clientSocket, GameProtocol.SuccesLoginPackedID());
-               
-                Othello.Server.SendPacket(clientSocket, new BasicPacket(GameProtocol.SuccesLoginPackedID()).getData());
+                user.IsBusy = false;
+                user.Socket = clientSocket;
+                Singleton.Singleton.Instance.ListOfUsersLogged.Add(user);
+                //Send to current user logged the list with all the users logged and the status of them
+                string PacketMessage = "";
+                foreach (User u in Singleton.Singleton.Instance.ListOfUsersLogged)
+                {
+                    if (u.Username == username)
+                        continue;
+                    PacketMessage += u.Username + ":" + u.IsBusy + "|";
+                    MessagePacket messagePacket = new MessagePacket(GameProtocol.AlertUsersNewUserLoggedID(), username + ":False");
+                    Othello.Server.SendPacket(u.Socket,messagePacket.getData());
+                }
+                MessagePacket packet = new MessagePacket(GameProtocol.UsersLoggedListPacketID(), PacketMessage);
+                Othello.Server.SendPacket(user.Socket, packet.getData());
             }
             else
             {
-                //responseBack(clientSocket, GameProtocol.FailedLoginPacketID());
                 BasicPacket bp = new BasicPacket(GameProtocol.FailedLoginPacketID());
                 Othello.Server.SendPacket(clientSocket, bp.getData());
-
             }
         }
 

@@ -24,7 +24,7 @@ namespace Server.Packets
         }
 
         public RoomChatPacket(ushort room,string Message) : 
-            base(GameProtocol.ChatMessagePacketID(), (ushort)(4+Message.Length))
+            base(GameProtocol.RoomChatMessagePacketID(), (ushort)(4+Message.Length))
         {
             RoomID = room;
             this.Message = Message;

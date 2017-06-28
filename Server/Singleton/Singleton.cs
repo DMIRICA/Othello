@@ -1,4 +1,5 @@
 ﻿using Server.database;
+using Server.Entities;
 using Server.Game;
 using Server.Packets;
 using Server.Protocol;
@@ -16,6 +17,8 @@ namespace Server.Singleton
         private DatabaseConnection _DatabaseConnection;
         private static Singleton _Instance;
         public List<Room> ListOfRooms;
+        public List<User> ListOfUsersLogged;
+
         public List<Player> ListOfPlayers;
         public ushort RoomIDHelper;
              
@@ -43,6 +46,7 @@ namespace Server.Singleton
         {
             ListOfRooms = new List<Room>();
             ListOfPlayers = new List<Player>();
+            ListOfUsersLogged = new List<User>();
             _DatabaseConnection = new DatabaseConnection();
             RoomIDHelper = 0;
         }
