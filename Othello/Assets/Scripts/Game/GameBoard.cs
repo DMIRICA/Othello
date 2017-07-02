@@ -33,7 +33,7 @@ public class GameBoard : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        var ugly = UnityThreadHelper.Dispatcher;
+        
         initBoard();
     }
 

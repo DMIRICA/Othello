@@ -1,5 +1,6 @@
 ﻿using Server.Game;
 using Server.Packets;
+using Server.Protocol;
 using Server.Singleton;
 using System;
 using System.Collections.Generic;
@@ -7,16 +8,15 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace ReversiServer
+namespace Othello
 {
     public class Server
     {
         private static Socket _ServerSocket;
         public static readonly List<Socket> _ClientSockets = new List<Socket>();
         private const int _BUFFER_SIZE = 1024;
-        private const int _PORT = 2016;
-        private static readonly byte[] _buffer = new byte[_BUFFER_SIZE];
-
+        private const int _PORT = 2017;
+        private static readonly byte[] _Buffer = new byte[_BUFFER_SIZE];
 
 
         public void StartServer()
@@ -29,10 +29,9 @@ namespace ReversiServer
             Console.WriteLine("Server setup complete");
         }
 
-        /// <summary>
+
         /// Close all connected client (we do not need to shutdown the server socket as its connections
         /// are already closed with the clients)
-        /// </summary>
         public static void CloseAllSockets()
         {
             foreach (Socket socket in _ClientSockets)
@@ -59,24 +58,22 @@ namespace ReversiServer
             Console.WriteLine("Client connected, waiting for request...");
             _ClientSockets.Add(socket);
             Singleton.Instance.ListOfPlayers.Insert(0,new Player(socket));
+            /*
             if (Singleton.Instance.ListOfPlayers.Count % 2 == 0)
             {
-                InitRoom();
+                Singleton.Instance.addNewRoom();
             }
-            socket.BeginReceive(_buffer, 0, _BUFFER_SIZE, SocketFlags.None, ReceiveCallback, socket);
+            socket.BeginReceive(_Buffer, 0, _BUFFER_SIZE, SocketFlags.None, ReceiveCallback, socket);
             _ServerSocket.BeginAccept(AcceptCallback, null);
-        }
-
-        private static void InitRoom()
-        {
-            Room room = new Room(Singleton.Instance.ListOfPlayers[0], Singleton.Instance.ListOfPlayers[1],Singleton.Instance.RoomIDHelper);
-            Singleton.Instance.ListOfRooms.Add(room);
-            Singleton.Instance.RoomIDHelper++;
+            */
+            socket.BeginReceive(_Buffer, 0, _BUFFER_SIZE, SocketFlags.None, ReceiveCallback, socket);
+            _ServerSocket.BeginAccept(AcceptCallback, null);
         }
 
         private static void ReceiveCallback(IAsyncResult AR)
         {
             Socket current = (Socket)AR.AsyncState;
+            
             int received;
 
             try
@@ -85,17 +82,17 @@ namespace ReversiServer
                 if (received > 0)
                 {
                     byte[] recBuf = new byte[received];
-                    Array.Copy(_buffer, recBuf, received);
+                    Array.Copy(_Buffer, recBuf, received);
                     PacketHandler.Handle(recBuf, current);
                     if (current.Connected)
                     {
-                        current.BeginReceive(_buffer, 0, _BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current);
+                        current.BeginReceive(_Buffer, 0, _BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current);
                     }
                 }
             }
-            catch (SocketException)
+            catch (SocketException e)
             {
-                Console.WriteLine("Client forcefully disconnected");
+                Console.WriteLine("Client forcefully disconnected" + e.Message);
                 current.Close(); // Dont shutdown because the socket may be disposed and its disconnected anyway
                 _ClientSockets.Remove(current);
                 return;
@@ -103,15 +100,25 @@ namespace ReversiServer
             
         }
 
-        public static void SendPacket(Socket playerSocket,byte[] packet)
+        public static void SendPacket(Socket clientSocket,byte[] packet)
         {
-            try
+            if (clientSocket.Connected)
             {
-                if(playerSocket.Connected)
-                playerSocket.BeginSend(packet, 0, packet.Length, SocketFlags.None, SendCallBack, playerSocket);
-
+                try
+                {
+                    clientSocket.BeginSend(packet, 0, packet.Length, SocketFlags.None, SendCallBack, clientSocket);
+                }
+                catch (SocketException e)
+                {
+                    Console.WriteLine("(Server) Send packet exception ->" + e);
+                }
             }
-            catch (Exception e) { }
+            else
+            {
+                Console.WriteLine("Detected client socket is not connected.Remove him from the list");
+                Singleton.Instance.ListOfUsersLogged.RemoveAll(x => x.Socket == clientSocket);
+            }
+            
 
         }
 
@@ -122,7 +129,14 @@ namespace ReversiServer
                 Socket socket = AR.AsyncState as Socket;
                 socket.EndSend(AR);
             }
-            catch (Exception e) { }
+            catch (SocketException e)
+            {
+                Console.WriteLine("(Server) Send packet callback exception ->" + e);
+            }
+            catch (ObjectDisposedException e)
+            {
+               
+            }
 
         }
 

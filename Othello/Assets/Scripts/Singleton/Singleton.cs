@@ -5,11 +5,16 @@ using Assets.Scripts.Networking;
 using Assets.Scripts.Game;
 using UnityEngine.UI;
 using Assets.Scripts.Networking.GamePackets;
+using System.Security.Cryptography;
+using System;
+using System.Text;
+using System.Linq;
+using Assets.Scripts.Entities;
 
 namespace Assets.Scripts.Singleton
 {
-    public class Singleton : MonoBehaviour
-    {
+    class Singleton
+    { 
 
         #region UI Elements
 
@@ -19,6 +24,7 @@ namespace Assets.Scripts.Singleton
         public GameObject GameOverPanel;
 
         #endregion
+
 
         #region Surrender elements
         public GameObject SurrenderPanel;
@@ -31,6 +37,8 @@ namespace Assets.Scripts.Singleton
 
         //Sprites
         public List<Sprite> sprites;
+        private User _Me;
+        private List<User> _UsersLoggedList;
 
         #endregion
 
@@ -38,13 +46,24 @@ namespace Assets.Scripts.Singleton
         private static Singleton _Instance;
         private List<BoardPosition> _LegalMoves;
         private ClientConnection _Connection;
+        private bool _Logout;
         private bool _IsYourTurn;
+        private bool _DrawNumbers;
         private CellColor _DiskColor;
         private string _MessageTyped;
         private ushort _RoomID;
         #endregion
 
         #region Methods
+
+        private Singleton()
+        {
+            _LegalMoves = new List<BoardPosition>();
+            _Connection = new ClientConnection();
+            UsersLoggedList = new List<User>();
+            _Logout = false;
+            Me = new User();
+        }
 
         #region GET/SET
         public static Singleton Instance
@@ -68,6 +87,18 @@ namespace Assets.Scripts.Singleton
             set
             {
                 _DiskColor = value;
+            }
+        }
+
+        public User Me
+        {
+            get
+            {
+                return _Me;
+            }
+            set
+            {
+                _Me = value;
             }
         }
 
@@ -128,27 +159,69 @@ namespace Assets.Scripts.Singleton
                 _RoomID = value;
             }
         }
+
+        public bool DrawNumbers
+        {
+            get
+            {
+                return _DrawNumbers;
+            }
+
+            set
+            {
+                _DrawNumbers = value;
+            }
+        }
+
+        internal List<User> UsersLoggedList
+        {
+            get
+            {
+                return _UsersLoggedList;
+            }
+
+            set
+            {
+                _UsersLoggedList = value;
+            }
+        }
+
+        public bool Logout
+        {
+            get
+            {
+                return _Logout;
+            }
+
+            set
+            {
+                _Logout = value;
+            }
+        }
+
         #endregion
 
-        void Awake()
-        {
-            _Instance = this;
-            LegalMoves = new List<BoardPosition>();
-            _Connection = new ClientConnection();
-            BlackChips.text = 0.ToString();
-            RedChips.text = 0.ToString();
-        }
+        // void Awake()
+        // {
+        //    //_Instance = this;
+        //_LegalMoves = new List<BoardPosition>();
+        // _Connection = new ClientConnection();
+        //BlackChips.text = 0.ToString();
+        //RedChips.text = 0.ToString();
+        //}
+
+
 
         void OnApplicationQuit()
         {
-            GamePacket Message = new GamePacket(GameProtocol.QuitGame(),RoomID, "quit");
+            GamePacket Message = new GamePacket(GameProtocol.UserDisconnected(),RoomID, "quit");
             Connection.SendPacket(Message.getData());
             Connection.CloseSocket();
         }
 
         public void QuitCommand()
         {
-            GamePacket Message = new GamePacket(GameProtocol.QuitGame(), RoomID, "quit");
+            GamePacket Message = new GamePacket(GameProtocol.UserDisconnected(), RoomID, "quit");
             Connection.SendPacket(Message.getData());
             Connection.CloseSocket();
             Application.Quit();
@@ -168,12 +241,12 @@ namespace Assets.Scripts.Singleton
 
         }
 
-        public void CallSurrenderPanel()
+        public void ShowSurrenderPanel()
         {
             SurrenderPanel.SetActive(true);
         }
 
-        public void NoSurrender()
+        public void HideSurrenderPanel()
         {
             SurrenderPanel.SetActive(false);
         }
@@ -185,7 +258,49 @@ namespace Assets.Scripts.Singleton
             LegalMoves.Clear();
             GameBoard.RemoveDrawMoves();
         }
+        
+        public void DisplayNumbers(bool boolean)
+        {
+            if (!boolean)
+            {
+                DrawNumbers = false;
+                foreach (BoardPosition bp in LegalMoves)
+                {
+                    GameBoard.gameBoard[bp.Row, bp.Column].ChangeText.text = "";
+                }
+            }
+            else
+            {
+                DrawNumbers = true;
+                foreach (BoardPosition bp in LegalMoves)
+                {
+                    GameBoard.gameBoard[bp.Row, bp.Column].ChangeText.text = bp.NumberOfChanges.ToString();
+                }
+            }
+            
+           
+        }
         #endregion
 
+
+        #region EncryptFunction
+        public string getHashFromString(string value)
+        {
+            SHA256 sha256 = SHA256Managed.Create();
+            byte[] bytes = Encoding.UTF8.GetBytes(value);
+            byte[] hash = sha256.ComputeHash(bytes);
+            return GetStringFromHash(hash);
+        }
+
+        private static string GetStringFromHash(byte[] hash)
+        {
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < hash.Length; i++)
+            {
+                result.Append(hash[i].ToString("X2"));
+            }
+            return result.ToString();
+        }
+        #endregion
     }
 }

@@ -34,7 +34,7 @@ namespace Server.Game
         {
             string s = x.IsHisTurn.ToString() + '|' + x.DiskColor;
             GamePacket Message = new GamePacket(GameProtocol.StartGamePacketID(),ID, s);
-            ReversiServer.Server.SendPacket(x.PlayerSocket, Message.getData());
+            Othello.Server.SendPacket(x.PlayerSocket, Message.getData());
         }
         private void SendLegalMoves(Player x)
         {
@@ -56,13 +56,13 @@ namespace Server.Game
                 }
                 GamePacket movesPacket = new GamePacket(GameProtocol.BoardMoves(),ID, tempString);
                 //DelayPacket(100);
-                ReversiServer.Server.SendPacket(x.PlayerSocket, movesPacket.getData());
+                Othello.Server.SendPacket(x.PlayerSocket, movesPacket.getData());
             }
         }
         public void SendGameBoard(Player x)
         {
             BoardPacket Packet = new BoardPacket(GameProtocol.BoardTableGamePacketID(), this);
-            ReversiServer.Server.SendPacket(x.PlayerSocket, Packet.getData());
+            Othello.Server.SendPacket(x.PlayerSocket, Packet.getData());
         }
         public void SendPlayerFirstStuff(Player x)
         {
@@ -130,7 +130,7 @@ namespace Server.Game
             #endregion
 
         }
-        public void SendAfterTurn()
+        public void SendGameStatsAfterMove()
         {
             SendPlayerTurn(Player1);
             DelayPacket(20);
@@ -164,9 +164,9 @@ namespace Server.Game
         {
             string s = x.IsHisTurn.ToString();
             GamePacket Message = new GamePacket(GameProtocol.PlayerTurnPacket(),ID, s);
-            ReversiServer.Server.SendPacket(x.PlayerSocket, Message.getData());
+            Othello.Server.SendPacket(x.PlayerSocket, Message.getData());
         }
-        public void ChangePlayerTurn()
+        public void ChangePlayersTurn()
         {
             if (Player1.IsHisTurn)
             {
@@ -202,7 +202,7 @@ namespace Server.Game
                     count++;
                 }
                 GamePacket Packet = new GamePacket(GameProtocol.BoardMoves(),ID, tempString);
-                ReversiServer.Server.SendPacket(Player1.PlayerSocket, Packet.getData());
+                Othello.Server.SendPacket(Player1.PlayerSocket, Packet.getData());
 
             }
             else if(Player2.IsHisTurn)
@@ -222,7 +222,7 @@ namespace Server.Game
                     count++;
                 }
                 GamePacket Packet = new GamePacket(GameProtocol.BoardMoves(),ID, tempString);
-                ReversiServer.Server.SendPacket(Player2.PlayerSocket, Packet.getData());
+                Othello.Server.SendPacket(Player2.PlayerSocket, Packet.getData());
             }
         }
         public void SendStartGamePackets()
@@ -323,7 +323,7 @@ namespace Server.Game
         public void SendGameOver(Player x, string message)
         {
             GamePacket Message = new GamePacket(GameProtocol.GameOverPacket(),ID, message);
-            ReversiServer.Server.SendPacket(x.PlayerSocket, Message.getData());
+            Othello.Server.SendPacket(x.PlayerSocket, Message.getData());
         }
         public void PlayAgain()
         {

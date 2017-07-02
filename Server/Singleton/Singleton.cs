@@ -1,4 +1,6 @@
-﻿using Server.Game;
+﻿using Server.database;
+using Server.Entities;
+using Server.Game;
 using Server.Packets;
 using Server.Protocol;
 using System;
@@ -9,10 +11,14 @@ using System.Threading.Tasks;
 
 namespace Server.Singleton
 {
-    public class Singleton
-    {
+   class Singleton
+   {
+
+        private DatabaseConnection _DatabaseConnection;
         private static Singleton _Instance;
         public List<Room> ListOfRooms;
+        public List<User> ListOfUsersLogged;
+
         public List<Player> ListOfPlayers;
         public ushort RoomIDHelper;
              
@@ -28,10 +34,20 @@ namespace Server.Singleton
             }
         }
 
+        public void addNewRoom()
+        {
+            Room room = new Room(ListOfPlayers[0], 
+                ListOfPlayers[1],RoomIDHelper);
+            ListOfRooms.Add(room);
+            RoomIDHelper++;
+        }
+
         private Singleton()
         {
             ListOfRooms = new List<Room>();
             ListOfPlayers = new List<Player>();
+            ListOfUsersLogged = new List<User>();
+            _DatabaseConnection = new DatabaseConnection();
             RoomIDHelper = 0;
         }
 
@@ -49,5 +65,26 @@ namespace Server.Singleton
         }
 
 
+        public DatabaseConnection DatabaseConnection
+        {
+            get { return _DatabaseConnection; }
+            set { _DatabaseConnection = value; }
+        }
+
+
+        public bool isUserLogged(string username)
+        {
+            bool online = false;
+            foreach(User user in ListOfUsersLogged)
+            {
+                if (user.Username == username)
+                {
+                    online = true;
+                    break;
+                }
+                
+            }
+            return online;
+        }
     }
 }

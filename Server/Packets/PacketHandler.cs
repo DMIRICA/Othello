@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Server.Singleton;
 using Server.Game;
+using Server.Protocol;
 
 namespace Server.Packets
 {
@@ -16,45 +17,70 @@ namespace Server.Packets
         {
             ushort packetType = BitConverter.ToUInt16(packet, 0);
             ushort packetLength = BitConverter.ToUInt16(packet, 2);
-            ushort roomID = BitConverter.ToUInt16(packet, 4);
-            Room CurrentRoom = Singleton.Singleton.Instance.GetRoomByID(roomID);
+            
 
             switch (packetType)
             {
-                case 100: // CHAT MESSAGE
-                    ChatMessage Message = new ChatMessage(packet);
-                    if (clientSocket == CurrentRoom.Player1.PlayerSocket)
-                    {
-                        ReversiServer.Server.SendPacket(CurrentRoom.Player2.PlayerSocket, packet);
-                    }
-                    else if(clientSocket == CurrentRoom.Player2.PlayerSocket)
-                    {
-                        ReversiServer.Server.SendPacket(CurrentRoom.Player1.PlayerSocket, packet);
-                    }
-                    CurrentRoom.ChatHistory.Add(Message.Message);
-
+                case 100: //Login
+                    LoginPacket loginPacket = new LoginPacket(packet);
+                    loginPacket.doLogin(clientSocket);
                     break;
+
+                case 110: // Register
+                    RegisterPacket registerPacket = new RegisterPacket(packet);
+                    registerPacket.registerAccount(clientSocket);
+                    break;
+
+                case 200: // GLOBAL CHAT MESSAGE
+                    MessagePacket MessagePacket = new MessagePacket(packet);
+                    MessagePacket.doChat();
+                    break;
+
+                case 201: // ROOM CHAT MESSAGE
+                    RoomChatPacket chatPacket = new RoomChatPacket(packet);
+                    chatPacket.doChat(clientSocket, packet);
+                    break;
+
+                case 250: // CHALLENGE PACKET (USERNAME CHALLANGED YOU ... )
+                    MessagePacket = new MessagePacket(packet);
+                    MessagePacket.sendAfterChallengeAction();
+                    break;
+
+                case 257: // USER ACCEPTED THE CHALLENGE
+                    MessagePacket = new MessagePacket(packet);
+                    //TODO
+                    //MessagePacket.notifyUsersAfterChallengeIgnore();
+                    break;
+
+                case 258: // USER REFUSED THE CHALLENGE
+                    MessagePacket = new MessagePacket(packet);
+                    MessagePacket.notifyUsersAfterChallengeRefuse();
+                    break;
+
+                case 260: // USER IGNORED THE CHALLENGE
+                    MessagePacket = new MessagePacket(packet);
+                    MessagePacket.notifyUsersAfterChallengeIgnore();
+                    break;
+
 
                 case 403: // Turn Move
                     GamePacket TurnMove = new GamePacket(packet);
+                    TurnMove.doChangesAfterTurn();
                     break;
 
-                case 999:// Player Quit
-                    foreach (Player p in Singleton.Singleton.Instance.ListOfPlayers)
-                    {
-                        if (p.PlayerSocket == clientSocket)
-                        {
-                            Singleton.Singleton.Instance.ListOfPlayers.Remove(p);
-                            break;
-                        }
-                    }
-                    ReversiServer.Server._ClientSockets.Remove(clientSocket);
-                    Console.WriteLine("Client Disconnected!");
-                    clientSocket.Shutdown(SocketShutdown.Both);
-                    clientSocket.Close();
+                case 998:// User logout
+                    BasicPacket basicPacket = new BasicPacket(packet);
+                    basicPacket.userLogout(clientSocket);
+                    break;
+
+                case 999:// User apllication close
+                    basicPacket = new BasicPacket(packet);
+                    basicPacket.applicationClose(clientSocket);
                     break;
 
                 case 406://Play Again
+                    ushort roomID = BitConverter.ToUInt16(packet, 4);
+                    Room CurrentRoom = Singleton.Singleton.Instance.GetRoomByID(roomID);
                     if (CurrentRoom.Player1.PlayerSocket == clientSocket)
                     {
                         CurrentRoom.Player1.PlayAgain = true;
@@ -76,7 +102,9 @@ namespace Server.Packets
                     break;
 
                 case 407://Surrender
-                    if(CurrentRoom.Player1.PlayerSocket == clientSocket)
+                    roomID = BitConverter.ToUInt16(packet, 4);
+                    CurrentRoom = Singleton.Singleton.Instance.GetRoomByID(roomID);
+                    if (CurrentRoom.Player1.PlayerSocket == clientSocket)
                     {
                         CurrentRoom.SendGameOver(CurrentRoom.Player2,
                             "You won!\n Your opponent surrenders.");

@@ -15,13 +15,18 @@ namespace Assets.Scripts.Networking
         public ClientConnection()
         {
             _Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            Connect("89.136.5.12", 2016);
+            Connect("192.168.0.4", 2017);
         }
 
         public bool isConnected()
         {
             return _Socket.Connected;
 
+        }
+
+        public void retryConnect()
+        {
+            Connect("192.168.0.4", 2017);
         }
 
         public void CloseSocket()
@@ -35,14 +40,15 @@ namespace Assets.Scripts.Networking
 
         public void Connect(string ipAddress, int port)
         {
+            
             try
             {
-                _Socket.BeginConnect(new IPEndPoint(IPAddress.Parse(ipAddress), port), ConnectCallback, null);
-                _Socket.BeginReceive(_buffer, 0, 1024, SocketFlags.None, ReceiveCallback, _Socket);
+                _Socket.BeginConnect(new IPEndPoint(IPAddress.Parse(ipAddress), port), ConnectCallback, _Socket);
+                _Socket.BeginReceive(_buffer, 0, 1024, SocketFlags.None, new AsyncCallback(ReceiveCallback), _Socket);
             }
-            catch (Exception e)
+            catch (SocketException e)
             {
-                
+                Debug.Log("Connect exception " + e.Message);
             }
         }
 
@@ -53,46 +59,57 @@ namespace Assets.Scripts.Networking
                 _Socket.EndConnect(ar);
                 
             }
-            catch (Exception e)
+            catch (SocketException e)
             {
+                Debug.Log("Connect callback exception " + e.Message);
             }
 
         }
 
-        private void ReceiveCallback(IAsyncResult ar)
+        private void ReceiveCallback(IAsyncResult AR)
         {
+            Socket socket = (Socket)AR.AsyncState;
             try
             {
-                int buffLength = _Socket.EndReceive(ar);
+                int buffLength = _Socket.EndReceive(AR);
                 byte[] packet = new byte[buffLength];
                 Array.Copy(_buffer, packet, packet.Length);
-
+                
                 PacketHandler.Handle(packet, _Socket);
-
+                
                 _buffer = new byte[1024];
-                _Socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, ReceiveCallback, null);
+                _Socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), socket);
             }
-            catch (Exception e) {}
+            catch (Exception e)
+            {
+                Debug.Log("ReceiveCallback exception " + e.Message);
+            }
         }
 
         public void SendPacket(byte[] packet)
         {
             try
             {
-                _Socket.BeginSend(packet, 0, packet.Length, SocketFlags.None, SendCallBack, _Socket);
+                _Socket.BeginSend(packet, 0, packet.Length, SocketFlags.None, new AsyncCallback(SendCallBack), _Socket);
 
             }
-            catch (Exception e)
+            catch (SocketException e)
             {
-
+                Debug.Log("Sendpacket exception " + e.Message);
             }
-
         }
 
         private void SendCallBack(IAsyncResult AR)
         {
-            try { _Socket.EndSend(AR); }
-            catch (Exception e) { }
+            try
+            {
+                Socket resceiver = (Socket)AR.AsyncState;
+                resceiver.EndSend(AR);
+            }
+            catch (SocketException e)
+            {
+                Debug.Log("Sendpacket callback exception " + e.Message);
+            }
 
         }
 

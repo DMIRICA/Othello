@@ -4,11 +4,96 @@ using System.Collections;
 
 public static class GameProtocol
 {
+   
+    #region Login Packets IDs
 
-    public static ushort ChatMessagePacketID()
+    public static ushort LoginPacketID()
     {
         return 100;
     }
+    public static ushort SuccesLoginPackedID()
+    {
+        return 101;
+    }
+    public static ushort FailedLoginPacketID()
+    {
+        return 102;
+    }
+
+
+    #endregion
+
+    #region Register Packets IDs
+    public static ushort CreateAccountPacketID()
+    {
+        return 110;
+    }
+
+    public static ushort SuccesCreateAccountPacketID()
+    {
+        return 111;
+    }
+
+    public static ushort FailedCreateAccountPacketID()
+    {
+        return 112;
+    }
+
+    public static ushort UsernameAlreadyUsedPacketID()
+    {
+        return 113;
+    }
+
+    public static ushort EmailAlreadyUsedPacketID()
+    {
+        return 114;
+    }
+    #endregion
+
+    #region Chat
+
+    public static ushort GlobalChatMessagePacketID()
+    {
+        return 200;
+    } 
+    public static ushort RoomChatMessagePacketID()
+    {
+        return 201;
+    }
+    #endregion
+
+    public static ushort ChallengePacketID()
+    {
+        return 250;
+    }
+
+    public static ushort ChallengeAcceptedPacketID()
+    {
+        return 257;
+    }
+    public static ushort ChallengeRefusedPacketID()
+    {
+        return 258;
+    }
+
+    public static ushort ChallengeTimeoutPacketID()
+    {
+        return 260;
+    }
+
+    public static ushort ChangeUserToOnline()
+    {
+        return 270;
+    }
+    public static ushort ChangeUserToChallenged()
+    {
+        return 271;
+    }
+    public static ushort ChangeUserToInGame()
+    {
+        return 272;
+    }
+
 
     public static ushort BoardTableGamePacketID()
     {
@@ -39,12 +124,7 @@ public static class GameProtocol
     {
         return 405;
     }
-
-    public static ushort QuitGame()
-    {
-        return 999;
-    }
-
+   
     public static ushort PlayAgain()
     {
         return 406;
@@ -54,7 +134,10 @@ public static class GameProtocol
     {
         return 407;
     }
-
+    public static ushort UserDisconnected()
+    {
+        return 999;
+    }
 }
 
 
