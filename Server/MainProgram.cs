@@ -20,16 +20,9 @@ namespace Othello
             Server _Server = new Server();
 
             _Server.StartServer();
+
             Console.ReadLine(); // When we press enter close everything
             Server.CloseAllSockets();
-            
-
-
-
-            //Console.WriteLine(hash);
-           
-            
-            
 
         }
 

@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Entities;
+using Assets.Scripts.Networking.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,133 +12,185 @@ namespace Assets.Scripts.MainScene
 {
     class MainSceneScript : MonoBehaviour
     {
-        public GameObject ScrollViewContent;
-        public GameObject ModalPanel;
-        public GameObject UserItemPrefab;
-        public static GameObject UserItemPrefabStatic;
-        public static GameObject ScrollViewContentStatic;
 
         // Use this for initialization
         void Start()
         {
             addUsersToScrollViewContent();
+            if (SingletonUI.Instance.ChatView.text != "")
+            {
+                SingletonUI.Instance.ChatView.text = "";
+            }
         }
 
-        // Update is called once per frame
-        void Update()
-        {
 
-        }
-
-        private void Awake()
-        {
-            UserItemPrefabStatic = UserItemPrefab;
-            ScrollViewContentStatic = ScrollViewContent;
-        }
-
-        public void addUsersToScrollViewContent()
+        //After login you get a list with all users logged.This function populate the list with all users.
+        public static void addUsersToScrollViewContent()
         {
             if (Singleton.Singleton.Instance.UsersLoggedList.Count > 0)
             {
-                if (ScrollViewContent != null)
+                if (SingletonUI.Instance.ScrollViewContent != null)
                 {
                     foreach (User user in Singleton.Singleton.Instance.UsersLoggedList)
                     {
-                        GameObject userListItem = Instantiate(UserItemPrefab) as GameObject;
+                        GameObject userListItem = Instantiate(SingletonUI.Instance.UserItemPrefab) as GameObject;
                         UserListItemScript script = userListItem.GetComponent<UserListItemScript>();
                         script.Username.text = user.Username;
                         if (user.InGame)
                         {
-                            userListItem.transform.GetComponent<Image>().sprite = script.InGameSprite;
+                            userListItem.transform.GetComponent<Image>().sprite = SingletonUI.Instance.InGameSprite;
                             script.ChallengeImage.enabled = false;
                         }
                         else
                         {
-                            userListItem.transform.GetComponent<Image>().sprite = script.OnlineSprite;
+                            userListItem.transform.GetComponent<Image>().sprite = SingletonUI.Instance.OnlineSprite;
                             script.ChallengeImage.enabled = true;
                         }
-                        userListItem.transform.SetParent(ScrollViewContent.transform);
+                        userListItem.transform.SetParent(SingletonUI.Instance.ScrollViewContent.transform);
                     }
                 }
             }
         }
 
+        //Filtrate the users logged list and add them to UI. Used on search option.
         public void addUsersToScrollViewContentWithFilter(string filter)
         {
             if (Singleton.Singleton.Instance.UsersLoggedList.Count > 0)
             {
-                if (ScrollViewContent != null)
+                if (SingletonUI.Instance.ScrollViewContent != null)
                 {
                     foreach (User user in Singleton.Singleton.Instance.UsersLoggedList)
                     {
                         if (!user.Username.Contains(filter))
                             continue;
-                        GameObject userListItem = Instantiate(UserItemPrefab) as GameObject;
+                        GameObject userListItem = Instantiate(SingletonUI.Instance.UserItemPrefab) as GameObject;
                         UserListItemScript script = userListItem.GetComponent<UserListItemScript>();
                         script.Username.text = user.Username;
                         if (user.InGame)
                         {
-                            userListItem.transform.GetComponent<Image>().sprite = script.InGameSprite;
+                            userListItem.transform.GetComponent<Image>().sprite = SingletonUI.Instance.InGameSprite;
+                            script.ChallengeImage.enabled = false;
+                        }
+                        else if (user.IsChallenged)
+                        {
+                            userListItem.transform.GetComponent<Image>().sprite = SingletonUI.Instance.ChallengedSprite;
                             script.ChallengeImage.enabled = false;
                         }
                         else
                         {
-                            userListItem.transform.GetComponent<Image>().sprite = script.OnlineSprite;
+                            userListItem.transform.GetComponent<Image>().sprite = SingletonUI.Instance.OnlineSprite;
                             script.ChallengeImage.enabled = true;
                         }
-                        userListItem.transform.SetParent(ScrollViewContent.transform);
+                        userListItem.transform.SetParent(SingletonUI.Instance.ScrollViewContent.transform);
                     }
                 }
             }
         }
-
+        /*
+        //Add a user to UI list. Used when someone login.
         public static void addNewUsersToScrollViewContent(User user)
         {
-            GameObject userListItem = Instantiate(UserItemPrefabStatic) as GameObject;
+            GameObject userListItem = Instantiate(SingletonUI.Instance.UserItemPrefab) as GameObject;
             UserListItemScript script = userListItem.GetComponent<UserListItemScript>();
             script.Username.text = user.Username;
             if (user.InGame)
             {
-                userListItem.transform.GetComponent<Image>().sprite = script.InGameSprite;
+                userListItem.transform.GetComponent<Image>().sprite = SingletonUI.Instance.InGameSprite;
                 script.ChallengeImage.enabled = false;
             }
             else
             {
-                userListItem.transform.GetComponent<Image>().sprite = script.OnlineSprite;
+                userListItem.transform.GetComponent<Image>().sprite = SingletonUI.Instance.OnlineSprite;
                 script.ChallengeImage.enabled = true;
             }
-            userListItem.transform.SetParent(ScrollViewContentStatic.transform);
+            userListItem.transform.SetParent(SingletonUI.Instance.ScrollViewContent.transform);
         }
-
+        */
+        //Update function used to search for users.
         public void searchUpdate(string text)
         {
             deleteAllUsersFromScrolViewContent();
             addUsersToScrollViewContentWithFilter(text);
         }
 
+        //Delete users from UI list.
         public void deleteAllUsersFromScrolViewContent()
         {
-            foreach (Transform child in ScrollViewContent.transform)
+            foreach (Transform child in SingletonUI.Instance.ScrollViewContent.transform)
             {
                 GameObject.Destroy(child.gameObject);
             }
         }
 
+        //Open Logout panel.
         public void logoutAction()
         {
-            ModalPanel.SetActive(true);
+            //IF the challenge panel is active then send to the callenger refuse and close the panel
+            if (SingletonUI.Instance.ChallengePanel.activeSelf)
+            {
+                string[] splits = SingletonUI.Instance.ChallengeText.text.Split(' ');
+                MessagePacket packet = new MessagePacket(GameProtocol.ChallengeRefusedPacketID(),
+                    Singleton.Singleton.Instance.Me.Username + ":" + splits[0]);
+                Singleton.Singleton.Instance.Connection.SendPacket(packet.getData());
+                Singleton.Singleton.Instance.Me.IsChallenged = false;
+                SingletonUI.Instance.ChallengePanel.SetActive(false);
+            }
+
+            //Destroy every result panels ( if exists)
+            var list = SingletonUI.Instance.Helper.GetComponentsInChildren<ChallengeResultScript>();
+            foreach (ChallengeResultScript x in list)
+            {
+                x.destroyMyself();
+            }
+
+            SingletonUI.Instance.LogoutModalPanel.SetActive(true);
+
         }
 
+        //Action for button NO on logout panel.
         public void noLogoutAction()
         {
-            ModalPanel.SetActive(false);
+            SingletonUI.Instance.LogoutModalPanel.SetActive(false);
         }
 
+        //Action for button YES on logout panel.
         public void yesLogoutAction()
         {
-            ModalPanel.SetActive(false);
+            Singleton.Singleton.Instance.Connection.SendPacket(new BasicPacket(998).getData()); 
+            SingletonUI.Instance.LogoutModalPanel.SetActive(false);
             Singleton.Singleton.Instance.UsersLoggedList.Clear();
+            deleteAllUsersFromScrolViewContent();
+            Singleton.Singleton.Instance.Logout = true;
             SceneManager.LoadScene("LoginScene");
+        }
+
+        //Action for button rooms from MainScene.
+        public void roomButtonAction()
+        {
+            
+        }
+
+        public static void displayResponsePanel(string message)
+        {
+            //Verify if exists same resultResponsePanel
+            if (!SingletonUI.Instance.LogoutModalPanel.activeSelf)
+            {
+                var list = SingletonUI.Instance.Helper.GetComponentsInChildren<ChallengeResultScript>();
+
+                foreach (ChallengeResultScript x in list)
+                {
+                    if (x.Message.text == message)
+                    {
+                        x.destroyMyself();
+                        break;
+                    }
+                }
+
+                GameObject obj = Instantiate(SingletonUI.Instance.ChallengeResponsePrefab) as GameObject;
+                ChallengeResultScript script = obj.GetComponent<ChallengeResultScript>();
+                script.Message.text = message;
+                obj.transform.SetParent(SingletonUI.Instance.Helper.transform, false);
+            }
         }
     }
 }

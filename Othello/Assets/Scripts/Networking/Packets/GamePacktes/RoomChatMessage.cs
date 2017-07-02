@@ -28,13 +28,15 @@ namespace Assets.Scripts.Networking.Packets.GamePackets
         }
 
         public RoomChatMessage(ushort roomID,string Message) :
-            base(GameProtocol.ChatMessagePacketID(),(ushort)(6 + Message.Length))
+            base(GameProtocol.RoomChatMessagePacketID(),(ushort)(6 + Message.Length))
         {
             RoomID = roomID;
             WriteUShort(RoomID, 4);
             this.Message = Message;
             WriteString(Message, 6);
         }
+
+        
 
     }
 }

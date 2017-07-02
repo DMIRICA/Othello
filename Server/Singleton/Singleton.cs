@@ -71,5 +71,20 @@ namespace Server.Singleton
             set { _DatabaseConnection = value; }
         }
 
+
+        public bool isUserLogged(string username)
+        {
+            bool online = false;
+            foreach(User user in ListOfUsersLogged)
+            {
+                if (user.Username == username)
+                {
+                    online = true;
+                    break;
+                }
+                
+            }
+            return online;
+        }
     }
 }

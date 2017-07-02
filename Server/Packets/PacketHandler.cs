@@ -31,20 +31,51 @@ namespace Server.Packets
                     registerPacket.registerAccount(clientSocket);
                     break;
 
-                case 200: // ROOM CHAT MESSAGE
+                case 200: // GLOBAL CHAT MESSAGE
+                    MessagePacket MessagePacket = new MessagePacket(packet);
+                    MessagePacket.doChat();
+                    break;
+
+                case 201: // ROOM CHAT MESSAGE
                     RoomChatPacket chatPacket = new RoomChatPacket(packet);
                     chatPacket.doChat(clientSocket, packet);
                     break;
+
+                case 250: // CHALLENGE PACKET (USERNAME CHALLANGED YOU ... )
+                    MessagePacket = new MessagePacket(packet);
+                    MessagePacket.sendAfterChallengeAction();
+                    break;
+
+                case 257: // USER ACCEPTED THE CHALLENGE
+                    MessagePacket = new MessagePacket(packet);
+                    //TODO
+                    //MessagePacket.notifyUsersAfterChallengeIgnore();
+                    break;
+
+                case 258: // USER REFUSED THE CHALLENGE
+                    MessagePacket = new MessagePacket(packet);
+                    MessagePacket.notifyUsersAfterChallengeRefuse();
+                    break;
+
+                case 260: // USER IGNORED THE CHALLENGE
+                    MessagePacket = new MessagePacket(packet);
+                    MessagePacket.notifyUsersAfterChallengeIgnore();
+                    break;
+
 
                 case 403: // Turn Move
                     GamePacket TurnMove = new GamePacket(packet);
                     TurnMove.doChangesAfterTurn();
                     break;
 
-                case 999:// Player Quit
+                case 998:// User logout
                     BasicPacket basicPacket = new BasicPacket(packet);
-                    basicPacket.playerQuit(clientSocket);
-                    
+                    basicPacket.userLogout(clientSocket);
+                    break;
+
+                case 999:// User apllication close
+                    basicPacket = new BasicPacket(packet);
+                    basicPacket.applicationClose(clientSocket);
                     break;
 
                 case 406://Play Again

@@ -88,6 +88,9 @@
     <Compile Include="Assets\Scripts\Game\GameBoard.cs" />
     <Compile Include="Assets\Scripts\Game\GameProtocol.cs" />
     <Compile Include="Assets\Scripts\Game\Tile.cs" />
+    <Compile Include="Assets\Scripts\MainScene\ChallengeResultScript.cs" />
+    <Compile Include="Assets\Scripts\MainScene\ChallengeScript.cs" />
+    <Compile Include="Assets\Scripts\MainScene\GlobalChatScript.cs" />
     <Compile Include="Assets\Scripts\MainScene\MainSceneScript.cs" />
     <Compile Include="Assets\Scripts\MainScene\UserListItemScript.cs" />
     <Compile Include="Assets\Scripts\Networking\ClientConnection.cs" />
@@ -101,6 +104,7 @@
     <Compile Include="Assets\Scripts\Networking\Packets\PacketStructure.cs" />
     <Compile Include="Assets\Scripts\RightClickScript.cs" />
     <Compile Include="Assets\Scripts\Singleton\Singleton.cs" />
+    <Compile Include="Assets\Scripts\Singleton\SingletonUI.cs" />
     <Compile Include="Assets\Scripts\Utils\UnityMainThreadDispatcher.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

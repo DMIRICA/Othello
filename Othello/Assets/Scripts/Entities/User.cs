@@ -5,12 +5,12 @@ using System.Text;
 
 namespace Assets.Scripts.Entities
 {
-    class User
+    public class User
     {
 
         private string _Username;
         private bool _InGame;
-        private bool _AlreadyChallenged;
+        private bool _IsChallenged;
 
         public User() { }
 
@@ -18,7 +18,7 @@ namespace Assets.Scripts.Entities
         {
             _Username           = Username;
             _InGame             = InGame;
-            _AlreadyChallenged  = AlreadyChallenged;
+            _IsChallenged  = AlreadyChallenged;
         }
 
         public string Username
@@ -30,13 +30,23 @@ namespace Assets.Scripts.Entities
         public bool InGame
         {
             get {   return _InGame; }
-            set {   _InGame = value; }
+            set
+            {   _InGame = value;
+                if (_InGame == true)
+                    _IsChallenged = false;
+                        
+            }
         }
 
-        public bool AlreadyChallenged
+        public bool IsChallenged
         {
-            get {   return _AlreadyChallenged; }
-            set {   _AlreadyChallenged = value; }
+            get {   return _IsChallenged; }
+            set
+            {
+                _IsChallenged = value;
+                if (_IsChallenged == true)
+                    _InGame = false;
+            }
         }
     }
 }

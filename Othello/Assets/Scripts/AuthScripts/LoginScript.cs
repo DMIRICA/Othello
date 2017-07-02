@@ -7,16 +7,15 @@ using System.Timers;
 using Assets.Scripts.Networking.GamePacktes;
 using UnityEngine.EventSystems;
 using Assets.Scripts.Utils;
+using Assets.Scripts.Entities;
 
 public class LoginScript : MonoBehaviour
 {
 
     private string _Username;
-    public string _Password;
+    private string _Password;
     public static Text popUpText;
-    private EventSystem eventSystem;
-    
-
+    public EventSystem eventSystem;
     
 
     public void getUsername(string username)
@@ -104,11 +103,12 @@ public class LoginScript : MonoBehaviour
         SceneManager.LoadScene("CreateAccountScene");
     }
 
-    public static void LoadGameScene()
+    public static void LoadMainScene()
     {
+        if(SingletonUI.Instance != null)
+        {
 
-        
-
+        }
         UnityMainThreadDispatcher.Enqueue(() =>
         {
             SceneManager.LoadScene("MainScene");
@@ -124,6 +124,7 @@ public class LoginScript : MonoBehaviour
         else
         {
             string hash = Singleton.Instance.getHashFromString(_Password);
+            Singleton.Instance.Me = new User(_Username,false,false);
             MessagePacket packet = new MessagePacket(GameProtocol.LoginPacketID(), _Username + "|" + hash);
             Singleton.Instance.Connection.SendPacket(packet.getData());
         }
@@ -134,28 +135,15 @@ public class LoginScript : MonoBehaviour
         return _Username.Equals("") || _Password.Equals("");
     }
 
-    public static void HidePopUpText()
+    public static IEnumerator updatePopUpText(string text)
     {
-        UnityMainThreadDispatcher.Enqueue(hideText());
-        
-    }
-
-    public static IEnumerator hideText()
-    {
-        popUpText.text = "";
+        popUpText.text = text;
         yield return null;
     }
 
-    public static void LoginFailed()
+    public static void runInMainThread(IEnumerator function)
     {
-        UnityMainThreadDispatcher.Enqueue(authProblem());
-        
-    }
-   
-    public static IEnumerator authProblem()
-    {
-        popUpText.text = "Username and password do not match";    
-        yield return null;
+        UnityMainThreadDispatcher.Enqueue(function);
     }
 
 }

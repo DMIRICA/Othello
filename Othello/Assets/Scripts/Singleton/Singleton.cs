@@ -25,6 +25,7 @@ namespace Assets.Scripts.Singleton
 
         #endregion
 
+
         #region Surrender elements
         public GameObject SurrenderPanel;
         #endregion
@@ -36,7 +37,7 @@ namespace Assets.Scripts.Singleton
 
         //Sprites
         public List<Sprite> sprites;
-
+        private User _Me;
         private List<User> _UsersLoggedList;
 
         #endregion
@@ -45,6 +46,7 @@ namespace Assets.Scripts.Singleton
         private static Singleton _Instance;
         private List<BoardPosition> _LegalMoves;
         private ClientConnection _Connection;
+        private bool _Logout;
         private bool _IsYourTurn;
         private bool _DrawNumbers;
         private CellColor _DiskColor;
@@ -59,6 +61,8 @@ namespace Assets.Scripts.Singleton
             _LegalMoves = new List<BoardPosition>();
             _Connection = new ClientConnection();
             UsersLoggedList = new List<User>();
+            _Logout = false;
+            Me = new User();
         }
 
         #region GET/SET
@@ -83,6 +87,18 @@ namespace Assets.Scripts.Singleton
             set
             {
                 _DiskColor = value;
+            }
+        }
+
+        public User Me
+        {
+            get
+            {
+                return _Me;
+            }
+            set
+            {
+                _Me = value;
             }
         }
 
@@ -170,6 +186,18 @@ namespace Assets.Scripts.Singleton
             }
         }
 
+        public bool Logout
+        {
+            get
+            {
+                return _Logout;
+            }
+
+            set
+            {
+                _Logout = value;
+            }
+        }
 
         #endregion
 
@@ -186,14 +214,14 @@ namespace Assets.Scripts.Singleton
 
         void OnApplicationQuit()
         {
-            GamePacket Message = new GamePacket(GameProtocol.QuitGame(),RoomID, "quit");
+            GamePacket Message = new GamePacket(GameProtocol.UserDisconnected(),RoomID, "quit");
             Connection.SendPacket(Message.getData());
             Connection.CloseSocket();
         }
 
         public void QuitCommand()
         {
-            GamePacket Message = new GamePacket(GameProtocol.QuitGame(), RoomID, "quit");
+            GamePacket Message = new GamePacket(GameProtocol.UserDisconnected(), RoomID, "quit");
             Connection.SendPacket(Message.getData());
             Connection.CloseSocket();
             Application.Quit();

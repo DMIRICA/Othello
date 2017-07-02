@@ -23,6 +23,10 @@ namespace Server.Protocol
             return 102;
         }
 
+        public static ushort AlreadyOnlinePacketID()
+        {
+            return 103;
+        }
 
         #endregion
 
@@ -65,10 +69,55 @@ namespace Server.Protocol
         }
         #endregion
 
-        public static ushort ChatMessagePacketID()
+        #region Chat
+        public static ushort GlobalChatMessagePacketID()
         {
             return 200;
         }
+        public static ushort RoomChatMessagePacketID()
+        {
+            return 200;
+        }
+        #endregion
+
+        #region Challenge
+        public static ushort ChallengePacketID()
+        {
+            return 250;
+        }
+
+
+        public static ushort UserAcceptedChallengePacketID()
+        {
+            return 257;
+        }
+
+
+        public static ushort UserRefusedChallengePacketID()
+        {
+            return 258;
+        }
+
+        public static ushort ChallengeTimeoutPacketID()
+        {
+            return 260;
+        }
+
+
+        public static ushort ChangeUserToOnline()
+        {
+            return 270;
+        }
+        public static ushort ChangeUserToChallenged()
+        {
+            return 271;
+        }
+        public static ushort ChangeUserToInGame()
+        {
+            return 272;
+        }
+
+        #endregion
 
         public static ushort BoardTableGamePacketID()
         {
@@ -109,8 +158,12 @@ namespace Server.Protocol
         {
             return 407;
         }
+        public static ushort UserLogout()
+        {
+            return 998;
+        }
 
-        public static ushort PlayerQuit()
+        public static ushort UserDisconnected()
         {
             return 999;
         }

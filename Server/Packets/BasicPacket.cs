@@ -1,4 +1,5 @@
-﻿using Server.Game;
+﻿using Server.Entities;
+using Server.Game;
 using Server.Protocol;
 using System;
 using System.Collections.Generic;
@@ -18,30 +19,66 @@ namespace Server.Packets
             packetID = ReadUShort(0);
         }
 
-        public BasicPacket(ushort packetID) : 
+        public BasicPacket(ushort packetID) :
             base(packetID, 4)
         {
 
         }
 
-        public void playerQuit(Socket clientSocket)
+        public void userLogout(Socket clientSocket)
         {
-            if(packetID == GameProtocol.PlayerQuit())
+            User user = null;
+            foreach (User u in Singleton.Singleton.Instance.ListOfUsersLogged)
             {
-                foreach (Player p in Singleton.Singleton.Instance.ListOfPlayers)
+                if (u.Socket == clientSocket)
                 {
-                    if (p.PlayerSocket == clientSocket)
-                    {
-                        Singleton.Singleton.Instance.ListOfPlayers.Remove(p);
-                        break;
-                    }
+                    user = u;
+                    break;
                 }
-                Othello.Server._ClientSockets.Remove(clientSocket);
-                Console.WriteLine("Client Disconnected!");
-                clientSocket.Shutdown(SocketShutdown.Both);
-                clientSocket.Close();
             }
+            if (user != null)
+            {
+                MessagePacket packet = new MessagePacket(GameProtocol.UserDisconnected(), user.Username);
+                foreach (User aux in Singleton.Singleton.Instance.ListOfUsersLogged)
+                {
+                    if (aux == user)
+                        continue;
+                    Othello.Server.SendPacket(aux.Socket, packet.getData());
+                }
+                Singleton.Singleton.Instance.ListOfUsersLogged.Remove(user);
+            }
+            Console.WriteLine("Client Logout!");
         }
-    
+
+        public void applicationClose(Socket clientSocket)
+        {
+            User user = null;
+            foreach (User u in Singleton.Singleton.Instance.ListOfUsersLogged)
+            {
+                if (u.Socket == clientSocket)
+                {
+                    user = u;
+                    break;
+                }
+            }
+
+            if (user != null)
+            {
+                MessagePacket packet = new MessagePacket(GameProtocol.UserDisconnected(), user.Username);
+                foreach (User aux in Singleton.Singleton.Instance.ListOfUsersLogged)
+                {
+                    if (aux == user)
+                        continue;
+                    Othello.Server.SendPacket(aux.Socket, packet.getData());
+                }
+                Singleton.Singleton.Instance.ListOfUsersLogged.Remove(user);
+            }
+            Console.WriteLine("Client Disconnected!");
+            clientSocket.Shutdown(SocketShutdown.Both);
+            clientSocket.Close();
+        }
+
+
+
     }
 }

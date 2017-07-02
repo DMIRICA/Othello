@@ -102,14 +102,23 @@ namespace Othello
 
         public static void SendPacket(Socket clientSocket,byte[] packet)
         {
-            try
+            if (clientSocket.Connected)
             {
-                clientSocket.BeginSend(packet, 0, packet.Length, SocketFlags.None, SendCallBack, clientSocket);
+                try
+                {
+                    clientSocket.BeginSend(packet, 0, packet.Length, SocketFlags.None, SendCallBack, clientSocket);
+                }
+                catch (SocketException e)
+                {
+                    Console.WriteLine("(Server) Send packet exception ->" + e);
+                }
             }
-            catch (SocketException e)
+            else
             {
-                Console.WriteLine("(Server) Send packet exception ->" + e);
+                Console.WriteLine("Detected client socket is not connected.Remove him from the list");
+                Singleton.Instance.ListOfUsersLogged.RemoveAll(x => x.Socket == clientSocket);
             }
+            
 
         }
 
@@ -123,6 +132,10 @@ namespace Othello
             catch (SocketException e)
             {
                 Console.WriteLine("(Server) Send packet callback exception ->" + e);
+            }
+            catch (ObjectDisposedException e)
+            {
+               
             }
 
         }

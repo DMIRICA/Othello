@@ -13,7 +13,8 @@ namespace Server.Entities
         private string _Username;
         private string _Password;
         private string _Email;
-        private bool _IsBusy;
+        private bool _InGame;
+        private bool _IsChallenged;
         private Socket _Socket;
 
 
@@ -51,16 +52,22 @@ namespace Server.Entities
             set{    _Email = value; }
         }
 
-        public bool IsBusy
+        public bool InGame
         {
-            get { return _IsBusy; }
-            set { _IsBusy = value; }
+            get { return _InGame; }
+            set { _InGame = value; }
         }
 
         public Socket Socket
         {
             get { return _Socket; }
             set { _Socket = value; }
+        }
+
+        public bool IsChallenged
+        {
+            get { return _IsChallenged; }
+            set { _IsChallenged = value; }
         }
     }
 }

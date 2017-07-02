@@ -53,7 +53,7 @@ namespace Assets.Scripts.Networking.Packets
             yield return null;
         }
 
-        public void RunInMainThread(IEnumerator function)
+        public void runInMainThread(IEnumerator function)
         {
             UnityMainThreadDispatcher.Enqueue(function);
         }

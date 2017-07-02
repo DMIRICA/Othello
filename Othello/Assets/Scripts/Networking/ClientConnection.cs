@@ -24,6 +24,11 @@ namespace Assets.Scripts.Networking
 
         }
 
+        public void retryConnect()
+        {
+            Connect("192.168.0.4", 2017);
+        }
+
         public void CloseSocket()
         {
             if (isConnected())
@@ -35,6 +40,7 @@ namespace Assets.Scripts.Networking
 
         public void Connect(string ipAddress, int port)
         {
+            
             try
             {
                 _Socket.BeginConnect(new IPEndPoint(IPAddress.Parse(ipAddress), port), ConnectCallback, _Socket);
@@ -82,20 +88,15 @@ namespace Assets.Scripts.Networking
 
         public void SendPacket(byte[] packet)
         {
-
-            if (_Socket.Connected)
+            try
             {
-                try
-                {
-                    _Socket.BeginSend(packet, 0, packet.Length, SocketFlags.None, new AsyncCallback(SendCallBack), _Socket);
+                _Socket.BeginSend(packet, 0, packet.Length, SocketFlags.None, new AsyncCallback(SendCallBack), _Socket);
 
-                }
-                catch (SocketException e)
-                {
-                    Debug.Log("Sendpacket exception " + e.Message);
-                }
             }
-
+            catch (SocketException e)
+            {
+                Debug.Log("Sendpacket exception " + e.Message);
+            }
         }
 
         private void SendCallBack(IAsyncResult AR)
