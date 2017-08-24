@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Networking.GamePacktes;
+﻿using Assets.Scripts.Networking.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,20 +14,9 @@ namespace Assets.Scripts.MainScene
 
         public InputField ChatInputField;
 
-        void OnGUI()
-        {
-            if (ChatInputField.isFocused && Input.GetKey(KeyCode.Return))
-            {
-                ChatInputField.ActivateInputField();
-                if (ChatInputField.text != "")
-                {
-                    sendChatMessage();
-                    ChatInputField.text = "";
-                }
-            }
-        }
+       
 
-        private void sendChatMessage()
+        public void sendChatMessage()
         {
             if(ChatInputField.text != "")
             {
@@ -36,6 +25,7 @@ namespace Assets.Scripts.MainScene
 
                 MessagePacket packet = new MessagePacket(GameProtocol.GlobalChatMessagePacketID(), line);
                 Singleton.Singleton.Instance.Connection.SendPacket(packet.getData());
+                ChatInputField.text = "";
             }
             
         }

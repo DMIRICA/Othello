@@ -13,11 +13,13 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile></CompilerResponseFile>
+    <CompilerResponseFile>
+    </CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.6.0f3</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -84,7 +86,6 @@
     <Compile Include="Assets\Scripts\AutoGridLayout\layoutgrid.cs" />
     <Compile Include="Assets\Scripts\Entities\User.cs" />
     <Compile Include="Assets\Scripts\Game\BoardPosition.cs" />
-    <Compile Include="Assets\Scripts\Game\Chat.cs" />
     <Compile Include="Assets\Scripts\Game\GameBoard.cs" />
     <Compile Include="Assets\Scripts\Game\GameProtocol.cs" />
     <Compile Include="Assets\Scripts\Game\Tile.cs" />
@@ -97,13 +98,12 @@
     <Compile Include="Assets\Scripts\Networking\PacketHandler.cs" />
     <Compile Include="Assets\Scripts\Networking\Packets\BasicPacket.cs" />
     <Compile Include="Assets\Scripts\Networking\Packets\GamePacktes\BoardPacket.cs" />
-    <Compile Include="Assets\Scripts\Networking\Packets\GamePacktes\GamePacket.cs" />
-    <Compile Include="Assets\Scripts\Networking\Packets\GamePacktes\MessagePacket.cs" />
-    <Compile Include="Assets\Scripts\Networking\Packets\GamePacktes\RoomChatMessage.cs" />
     <Compile Include="Assets\Scripts\Networking\Packets\MessagePacket.cs" />
+    <Compile Include="Assets\Scripts\Networking\Packets\MessageRoomPacket.cs" />
     <Compile Include="Assets\Scripts\Networking\Packets\PacketStructure.cs" />
     <Compile Include="Assets\Scripts\RightClickScript.cs" />
     <Compile Include="Assets\Scripts\Singleton\Singleton.cs" />
+    <Compile Include="Assets\Scripts\Singleton\SingletonGame.cs" />
     <Compile Include="Assets\Scripts\Singleton\SingletonUI.cs" />
     <Compile Include="Assets\Scripts\Utils\UnityMainThreadDispatcher.cs" />
   </ItemGroup>

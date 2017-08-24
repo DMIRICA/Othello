@@ -9,15 +9,17 @@ namespace Server.Game
 {
     public class Player
     {
-        private Socket _PlayerSocket;
+        
         private char _DiskColor;
         private bool _IsHisTurn;
         private bool _PlayAgain;
+        private bool _ReadyToStart;
 
-        public Player(Socket s)
+        public Player()
         {
-            PlayerSocket = s;
-            _PlayAgain = false;
+            _PlayAgain      = false;
+            _IsHisTurn      = false;
+            _ReadyToStart   = false;
         }
         public char DiskColor
         {
@@ -41,17 +43,7 @@ namespace Server.Game
                 _IsHisTurn = value;
             }
         }
-        public Socket PlayerSocket
-        {
-            get
-            {
-                return _PlayerSocket;
-            }
-            set
-            {
-                _PlayerSocket = value;
-            }
-        }
+        
         public bool PlayAgain
         {
             get
@@ -63,5 +55,7 @@ namespace Server.Game
                 _PlayAgain = value;
             }
         }
+
+        public bool ReadyToStart { get => _ReadyToStart; set => _ReadyToStart = value; }
     }
 }

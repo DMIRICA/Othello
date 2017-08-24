@@ -39,6 +39,9 @@ public class ChallengeScript : MonoBehaviour {
     public void YesButtonChallenge()
     {
         //TODO 
+        MessagePacket packet = new MessagePacket(GameProtocol.ChallengeAcceptedPacketID(),
+            Singleton.Instance.Me.Username + ":" + SingletonUI.Instance.ChallengeText.text.Split(' ')[0]);
+        Singleton.Instance.Connection.SendPacket(packet.getData());
     }
 
     public void NoButtonChallenge()
@@ -78,9 +81,13 @@ public class ChallengeScript : MonoBehaviour {
 
     public void sendNoResponseToChallengePacket()
     {
-        string[] splits = SingletonUI.Instance.ChallengeText.text.Split(' ');
-        MessagePacket packet = new MessagePacket(GameProtocol.ChallengeTimeoutPacketID(),Singleton.Instance.Me.Username +":" + splits[0]);
-        Singleton.Instance.Connection.SendPacket(packet.getData());
-        Singleton.Instance.Me.IsChallenged = false;
+        if (!Singleton.Instance.Me.InGame)
+        {
+            string[] splits = SingletonUI.Instance.ChallengeText.text.Split(' ');
+            MessagePacket packet = new MessagePacket(GameProtocol.ChallengeTimeoutPacketID(), Singleton.Instance.Me.Username + ":" + splits[0]);
+            Singleton.Instance.Connection.SendPacket(packet.getData());
+            Singleton.Instance.Me.IsChallenged = false;
+        }
+        
     }
 }

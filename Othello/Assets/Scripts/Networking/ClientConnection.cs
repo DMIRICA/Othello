@@ -15,6 +15,7 @@ namespace Assets.Scripts.Networking
         public ClientConnection()
         {
             _Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            //Connect("192.168.0.4", 2017);
             Connect("192.168.0.4", 2017);
         }
 
@@ -91,7 +92,6 @@ namespace Assets.Scripts.Networking
             try
             {
                 _Socket.BeginSend(packet, 0, packet.Length, SocketFlags.None, new AsyncCallback(SendCallBack), _Socket);
-
             }
             catch (SocketException e)
             {

@@ -3,3 +3,17 @@ C:\Users\ynad9\Desktop\Server\bin\Release\Server.exe
 C:\Users\ynad9\Desktop\Server\bin\Release\Server.pdb
 C:\Users\ynad9\Desktop\Server\obj\Release\Server.exe
 C:\Users\ynad9\Desktop\Server\obj\Release\Server.pdb
+H:\Proiecte\Git\Othello\Server\bin\Release\Server.exe.config
+H:\Proiecte\Git\Othello\Server\bin\Release\Server.exe
+H:\Proiecte\Git\Othello\Server\bin\Release\Server.pdb
+H:\Proiecte\Git\Othello\Server\bin\Release\EntityFramework.dll
+H:\Proiecte\Git\Othello\Server\bin\Release\EntityFramework.SqlServer.dll
+H:\Proiecte\Git\Othello\Server\bin\Release\System.Data.SQLite.dll
+H:\Proiecte\Git\Othello\Server\bin\Release\System.Data.SQLite.EF6.dll
+H:\Proiecte\Git\Othello\Server\bin\Release\System.Data.SQLite.Linq.dll
+H:\Proiecte\Git\Othello\Server\bin\Release\EntityFramework.xml
+H:\Proiecte\Git\Othello\Server\bin\Release\EntityFramework.SqlServer.xml
+H:\Proiecte\Git\Othello\Server\bin\Release\System.Data.SQLite.xml
+H:\Proiecte\Git\Othello\Server\bin\Release\System.Data.SQLite.dll.config
+H:\Proiecte\Git\Othello\Server\obj\Release\Server.exe
+H:\Proiecte\Git\Othello\Server\obj\Release\Server.pdb

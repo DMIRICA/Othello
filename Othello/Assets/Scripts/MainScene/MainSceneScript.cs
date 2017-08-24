@@ -41,6 +41,11 @@ namespace Assets.Scripts.MainScene
                             userListItem.transform.GetComponent<Image>().sprite = SingletonUI.Instance.InGameSprite;
                             script.ChallengeImage.enabled = false;
                         }
+                        else if (user.IsChallenged)
+                        {
+                            userListItem.transform.GetComponent<Image>().sprite = SingletonUI.Instance.ChallengedSprite;
+                            script.ChallengeImage.enabled = false;
+                        }
                         else
                         {
                             userListItem.transform.GetComponent<Image>().sprite = SingletonUI.Instance.OnlineSprite;
@@ -114,7 +119,7 @@ namespace Assets.Scripts.MainScene
         }
 
         //Delete users from UI list.
-        public void deleteAllUsersFromScrolViewContent()
+        public static void deleteAllUsersFromScrolViewContent()
         {
             foreach (Transform child in SingletonUI.Instance.ScrollViewContent.transform)
             {
@@ -156,9 +161,10 @@ namespace Assets.Scripts.MainScene
         //Action for button YES on logout panel.
         public void yesLogoutAction()
         {
-            Singleton.Singleton.Instance.Connection.SendPacket(new BasicPacket(998).getData()); 
+            Singleton.Singleton.Instance.Connection.SendPacket(new BasicPacket(GameProtocol.Logout()).getData()); 
             SingletonUI.Instance.LogoutModalPanel.SetActive(false);
             Singleton.Singleton.Instance.UsersLoggedList.Clear();
+            SingletonUI.Instance.ChatView.text = "";
             deleteAllUsersFromScrolViewContent();
             Singleton.Singleton.Instance.Logout = true;
             SceneManager.LoadScene("LoginScene");

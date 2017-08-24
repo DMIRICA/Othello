@@ -18,27 +18,27 @@ namespace Server.Packets
             ushort packetType = BitConverter.ToUInt16(packet, 0);
             ushort packetLength = BitConverter.ToUInt16(packet, 2);
             
-
+            
             switch (packetType)
             {
                 case 100: //Login
-                    LoginPacket loginPacket = new LoginPacket(packet);
-                    loginPacket.doLogin(clientSocket);
+                    MessagePacket MessagePacket = new MessagePacket(packet);
+                    MessagePacket.doLogin(clientSocket);
                     break;
 
                 case 110: // Register
-                    RegisterPacket registerPacket = new RegisterPacket(packet);
-                    registerPacket.registerAccount(clientSocket);
+                    MessagePacket = new MessagePacket(packet);
+                    MessagePacket.registerAccount(clientSocket);
                     break;
 
                 case 200: // GLOBAL CHAT MESSAGE
-                    MessagePacket MessagePacket = new MessagePacket(packet);
-                    MessagePacket.doChat();
+                    MessagePacket = new MessagePacket(packet);
+                    MessagePacket.doGlobalChat();
                     break;
 
                 case 201: // ROOM CHAT MESSAGE
-                    RoomChatPacket chatPacket = new RoomChatPacket(packet);
-                    chatPacket.doChat(clientSocket, packet);
+                    MessageRoomPacket MessageRoomPacket = new MessageRoomPacket(packet);
+                    MessageRoomPacket.doRoomChat(clientSocket, packet);
                     break;
 
                 case 250: // CHALLENGE PACKET (USERNAME CHALLANGED YOU ... )
@@ -48,8 +48,7 @@ namespace Server.Packets
 
                 case 257: // USER ACCEPTED THE CHALLENGE
                     MessagePacket = new MessagePacket(packet);
-                    //TODO
-                    //MessagePacket.notifyUsersAfterChallengeIgnore();
+                    MessagePacket.playerAcceptedTheChallenge();
                     break;
 
                 case 258: // USER REFUSED THE CHALLENGE
@@ -64,8 +63,38 @@ namespace Server.Packets
 
 
                 case 403: // Turn Move
-                    GamePacket TurnMove = new GamePacket(packet);
-                    TurnMove.doChangesAfterTurn();
+                    MessageRoomPacket = new MessageRoomPacket(packet);
+                    MessageRoomPacket.doChangesAfterTurn();
+                    break;
+
+                case 406://Play Again
+                    MessageRoomPacket = new MessageRoomPacket(packet);
+                    MessageRoomPacket.playAgain();
+                    break;
+
+                case 407://Surrender
+                    MessageRoomPacket = new MessageRoomPacket(packet);
+                    MessageRoomPacket.surrender();
+                    break;
+
+                case 501: // PLAYER READY
+                    MessageRoomPacket = new MessageRoomPacket(packet);
+                    MessageRoomPacket.playerReady();
+                    break;
+
+                case 995:// Back to lobby after gameover
+                    MessageRoomPacket = new MessageRoomPacket(packet);
+                    MessageRoomPacket.backToLobby();
+                    break;
+
+                case 997:// User quit while in game -> send surr to opponent and disc to other users
+                    MessageRoomPacket = new MessageRoomPacket(packet);
+                    MessageRoomPacket.opponentQuitWhileInGame();
+                    break;
+
+                case 996:// User quit after game -> send user left the room
+                    MessageRoomPacket = new MessageRoomPacket(packet);
+                    MessageRoomPacket.opponentQuitAfterEndGame();
                     break;
 
                 case 998:// User logout
@@ -78,47 +107,7 @@ namespace Server.Packets
                     basicPacket.applicationClose(clientSocket);
                     break;
 
-                case 406://Play Again
-                    ushort roomID = BitConverter.ToUInt16(packet, 4);
-                    Room CurrentRoom = Singleton.Singleton.Instance.GetRoomByID(roomID);
-                    if (CurrentRoom.Player1.PlayerSocket == clientSocket)
-                    {
-                        CurrentRoom.Player1.PlayAgain = true;
-                        if (CurrentRoom.Player2.PlayAgain)
-                        {
-                            CurrentRoom.PlayAgain();
-                            CurrentRoom.ResetPlayAgain();
-                        }
-                    }
-                    else if(CurrentRoom.Player2.PlayerSocket == clientSocket)
-                    {
-                        CurrentRoom.Player2.PlayAgain = true;
-                        if (CurrentRoom.Player1.PlayAgain)
-                        {
-                            CurrentRoom.PlayAgain();
-                            CurrentRoom.ResetPlayAgain();
-                        }
-                    }
-                    break;
-
-                case 407://Surrender
-                    roomID = BitConverter.ToUInt16(packet, 4);
-                    CurrentRoom = Singleton.Singleton.Instance.GetRoomByID(roomID);
-                    if (CurrentRoom.Player1.PlayerSocket == clientSocket)
-                    {
-                        CurrentRoom.SendGameOver(CurrentRoom.Player2,
-                            "You won!\n Your opponent surrenders.");
-                        CurrentRoom.SendGameOver(CurrentRoom.Player1,
-                            "You lost!\n You Surrendered");
-                    }
-                    else if(CurrentRoom.Player2.PlayerSocket == clientSocket)
-                    {
-                        CurrentRoom.SendGameOver(CurrentRoom.Player1,
-                            "You won!\n Your opponent surrenders.");
-                        CurrentRoom.SendGameOver(CurrentRoom.Player2,
-                            "You lost!\n You Surrendered");
-                    }
-                    break;
+                
             }
 
         }

@@ -49,12 +49,12 @@ public class Tile : MonoBehaviour
         switch (color)
         {
             case CellColor.Red:
-                image.sprite = Singleton.Instance.sprites[1];
+                image.sprite = SingletonGame.Instance.sprites[1];
                 image.color = new Color(255, 255, 255);
                 break;
 
             case CellColor.Black:
-                image.sprite = Singleton.Instance.sprites[0];
+                image.sprite = SingletonGame.Instance.sprites[0];
                 image.color = new Color(255, 255, 255);
                 break;
 
@@ -83,18 +83,18 @@ public class Tile : MonoBehaviour
 
     public bool AbleToClick()
     {
-        return Singleton.Instance.IsYourTurn && selfTile.color == Color.white;
+        return SingletonGame.Instance.IsYourTurn && selfTile.color == Color.white;
     }
     public void Click()
     {
         if (AbleToClick())
         {
-            CellColor = Singleton.Instance.DiskColor;
+            CellColor = SingletonGame.Instance.DiskColor;
             PlayFlipAnimation();
             GameBoard.RemoveDrawMoves();
-            Singleton.Instance.LegalMoves.Clear();
-            string ClickMessage = Convert.ToString(this.row - 1) + ':' + Convert.ToString(this.column - 1) + '|' + Singleton.Instance.DiskColor.ToString();
-            GamePacket TurnPacket = new GamePacket(GameProtocol.TurnMovePacket(),Singleton.Instance.RoomID,ClickMessage);
+            SingletonGame.Instance.LegalMoves.Clear();
+            string ClickMessage = Convert.ToString(this.row - 1) + ':' + Convert.ToString(this.column - 1) + '|' + SingletonGame.Instance.DiskColor.ToString();
+            MessageRoomPacket TurnPacket = new MessageRoomPacket(GameProtocol.TurnMovePacket(), Singleton.Instance.RoomID,ClickMessage);
             Singleton.Instance.Connection.SendPacket(TurnPacket.getData());
             
         }

@@ -57,7 +57,7 @@ namespace Othello
             }
             Console.WriteLine("Client connected, waiting for request...");
             _ClientSockets.Add(socket);
-            Singleton.Instance.ListOfPlayers.Insert(0,new Player(socket));
+            //Singleton.Instance.ListOfPlayers.Insert(0,new Player(socket));
             /*
             if (Singleton.Instance.ListOfPlayers.Count % 2 == 0)
             {
