@@ -17,12 +17,15 @@ public class SingletonUI : MonoBehaviour
     public GameObject ScrollViewContent;
     public GameObject UserItemPrefab;
     public GameObject ChallengeResponsePrefab;
+    public GameObject MainSceneCanvas;
     public GameObject Helper;
     public Text ChatView;
+    public Button AcceptChallengeButton;
+    
     public Sprite OnlineSprite;
     public Sprite InGameSprite;
     public Sprite ChallengedSprite;
-
+    public Color defaultButtonCollor;
 
     void OnApplicationQuit()
     {
@@ -36,7 +39,7 @@ public class SingletonUI : MonoBehaviour
             Destroy(this.gameObject);
         }
 
-        //GameObject obj = Instantiate(ChallengeResultPanel) as GameObject;
+        defaultButtonCollor = AcceptChallengeButton.GetComponent<Image>().color;
     }
 
     public static SingletonUI Instance
@@ -46,7 +49,8 @@ public class SingletonUI : MonoBehaviour
             if (_Instance == null)
             {
                 _Instance = (SingletonUI)FindObjectOfType(typeof(SingletonUI));
-                DontDestroyOnLoad(_Instance.gameObject);
+                if(_Instance != null)
+                    DontDestroyOnLoad(_Instance.gameObject);
             }
 
             return _Instance;
@@ -61,6 +65,11 @@ public class SingletonUI : MonoBehaviour
         if (user.InGame)
         {
             userListItem.transform.GetComponent<Image>().sprite = SingletonUI.Instance.InGameSprite;
+            script.ChallengeImage.enabled = false;
+        }
+        else if (user.IsChallenged)
+        {
+            userListItem.transform.GetComponent<Image>().sprite = SingletonUI.Instance.ChallengedSprite;
             script.ChallengeImage.enabled = false;
         }
         else

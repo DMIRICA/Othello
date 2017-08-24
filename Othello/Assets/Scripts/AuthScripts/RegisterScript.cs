@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using UnityEngine.UI;
 using Assets.Scripts.Singleton;
 using UnityEngine.EventSystems;
-using Assets.Scripts.Networking.GamePacktes;
+using Assets.Scripts.Networking.Packets;
 
 namespace AuthScripts
 {

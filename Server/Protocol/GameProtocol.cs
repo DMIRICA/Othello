@@ -112,12 +112,23 @@ namespace Server.Protocol
         {
             return 271;
         }
+
         public static ushort ChangeUserToInGame()
         {
             return 272;
         }
 
         #endregion
+
+        public static ushort LoadGameScene()
+        {
+            return 500;
+        }
+
+        public static ushort PlayerReady()
+        {
+            return 501;
+        }
 
         public static ushort BoardTableGamePacketID()
         {
@@ -152,6 +163,25 @@ namespace Server.Protocol
         public static ushort PlayAgain()
         {
             return 406;
+        }
+        public static ushort LoadMainSceneFromGame()
+        {
+            return 995;
+        }
+
+        public static ushort OpponentQuitAfterEndGame()
+        {
+            return 996;
+        }
+
+        public static ushort OpponentQuitWhileInGame()
+        {
+            return 997;
+        }
+
+        public static ushort BackToLobby()
+        {
+            return 969;
         }
 
         public static ushort Surrender()

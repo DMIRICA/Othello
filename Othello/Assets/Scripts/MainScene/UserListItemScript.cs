@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Networking.GamePacktes;
+﻿using Assets.Scripts.Networking.Packets;
 using Assets.Scripts.Singleton;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,6 +20,7 @@ public class UserListItemScript : MonoBehaviour {
 
         var list = SingletonUI.Instance.Helper.GetComponentsInChildren<ChallengeResultScript>();
 
+        //If is already a challange result from that user close it.
         foreach (ChallengeResultScript x in list)
         {
             if (x.Message.text.Split(' ')[0] == Username.text)

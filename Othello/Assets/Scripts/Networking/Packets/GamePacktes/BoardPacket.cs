@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Game;
 using Assets.Scripts.Networking.GamePackets;
+using Assets.Scripts.Singleton;
 using Assets.Scripts.Utils;
 using System;
 using System.Collections;
@@ -56,8 +57,8 @@ namespace Assets.Scripts.Networking.Packets.GamePackets
                 }
             }
 
-            Singleton.Singleton.Instance.BlackChips.text = BlackCount.ToString();
-            Singleton.Singleton.Instance.RedChips.text = RedCount.ToString();
+            SingletonGame.Instance.BlackChips.text = BlackCount.ToString();
+            SingletonGame.Instance.RedChips.text = RedCount.ToString();
 
             #endregion
 

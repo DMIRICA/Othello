@@ -66,10 +66,7 @@
     <Compile Include="Packets\BasicPacket.cs" />
     <Compile Include="Packets\BoardPacket.cs" />
     <Compile Include="Packets\MessagePacket.cs" />
-    <Compile Include="Packets\RoomChatPacket.cs" />
-    <Compile Include="Packets\GamePacket.cs" />
-    <Compile Include="Packets\LoginPacket.cs" />
-    <Compile Include="Packets\RegisterPacket.cs" />
+    <Compile Include="Packets\MessageRoomPacket.cs" />
     <Compile Include="Protocol\GameProtocol.cs" />
     <Compile Include="Packets\PacketHandler.cs" />
     <Compile Include="Packets\PacketStructure.cs" />

@@ -51,7 +51,7 @@ namespace Server.database
                 }
                 catch (SQLiteException e)
                 {
-                    Console.WriteLine("Add account exception ->" + e);
+                    Console.WriteLine("Add account exception ->" + e.Message + e.TargetSite);
                 }
                 finally
                 {
@@ -88,7 +88,7 @@ namespace Server.database
             }
             catch (SQLiteException e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e.Message + e.TargetSite);
             }
             finally
             {
@@ -124,7 +124,7 @@ namespace Server.database
             }
             catch (SQLiteException e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e.Message + e.TargetSite);
             }
             finally
             {
@@ -161,7 +161,7 @@ namespace Server.database
 
             catch (SQLiteException e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e.Message + e.TargetSite);
             }
             finally
             {
@@ -190,7 +190,7 @@ namespace Server.database
             }
             catch (SQLiteException e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e.Message + e.TargetSite);
             }
             finally
             {
@@ -219,7 +219,7 @@ namespace Server.database
             }
             catch (SQLiteException e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e.Message + e.TargetSite);
             }
             finally
             {
@@ -258,7 +258,7 @@ namespace Server.database
             }
             catch (SQLiteException e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e.Message + e.TargetSite);
             }
             finally
             {

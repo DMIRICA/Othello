@@ -7,6 +7,7 @@ using Server;
 using Server.Packets;
 using Server.Protocol;
 using System.Threading;
+using Server.Entities;
 
 namespace Server.Game
 {
@@ -14,57 +15,66 @@ namespace Server.Game
     {
         private string _Name;
         private ushort _ID;
-        private Player _Player1;
-        private Player _Player2;
+        private User _FirstUser;
+        private User _SecondUser;
         private GameBoard _Gameboard;
         private List<string> _ChatHistory;
 
-        public Room(Player x, Player y,ushort ID)
+        public Room(User x, User y,ushort ID)
         {
-            Player1 = x;
-            Player2 = y;
-            this.ID = ID;
+            _FirstUser = x;
+            _SecondUser = y;
+            _ID = ID;
             _ChatHistory = new List<string>();
             Gameboard = new GameBoard();
+        }
+
+        public bool areBothPlayersReady()
+        {
+            return FirstUser.Player.ReadyToStart && SecondUser.Player.ReadyToStart;
+        }
+
+        public void startGame()
+        {
             PickFirsTurnPlayer();
             SendStartGamePackets();
         }
 
-        private void SendColorAndHisTurn(Player x)
+        private void SendColorAndHisTurn(User x)
         {
-            string s = x.IsHisTurn.ToString() + '|' + x.DiskColor;
-            GamePacket Message = new GamePacket(GameProtocol.StartGamePacketID(),ID, s);
-            Othello.Server.SendPacket(x.PlayerSocket, Message.getData());
+            string s = x.Player.IsHisTurn.ToString() + '|' + x.Player.DiskColor;
+            MessageRoomPacket Message = new MessageRoomPacket(GameProtocol.StartGamePacketID(),ID, s);
+            Othello.Server.SendPacket(x.Socket, Message.getData());
         }
-        private void SendLegalMoves(Player x)
+        private void SendLegalMoves(User x)
         {
-            if (x.IsHisTurn)
+            if (x.Player.IsHisTurn)
             {
-                List<BoardPosition> tempList = Gameboard.GetAllLegalMoves(x.DiskColor);
+                List<BoardPosition> tempList = Gameboard.GetAllLegalMoves(x.Player.DiskColor);
                 string tempString = "";
                 int count = 1;
                 foreach (BoardPosition aux in tempList)
                 {
                     if (count == tempList.Count)
                     {
-                        tempString += aux.Row.ToString() + ':' + aux.Column + '!' + Gameboard.GetNumberOfChanges(aux.Row,aux.Column,x.DiskColor);
+                        tempString += aux.Row.ToString() + ':' + aux.Column + '!' + Gameboard.GetNumberOfChanges(aux.Row,aux.Column,x.Player.DiskColor);
                         
                         continue;
                     }
-                    tempString += aux.Row.ToString() + ':' + aux.Column + '!' + Gameboard.GetNumberOfChanges(aux.Row, aux.Column, x.DiskColor) +'|';
+                    tempString += aux.Row.ToString() + ':' + aux.Column + '!' + Gameboard.GetNumberOfChanges(aux.Row, aux.Column, x.Player.DiskColor) +'|';
                     count++;
                 }
-                GamePacket movesPacket = new GamePacket(GameProtocol.BoardMoves(),ID, tempString);
+                MessageRoomPacket movesPacket = new MessageRoomPacket(GameProtocol.BoardMoves(),ID, tempString);
                 //DelayPacket(100);
-                Othello.Server.SendPacket(x.PlayerSocket, movesPacket.getData());
+                Othello.Server.SendPacket(x.Socket, movesPacket.getData());
             }
         }
-        public void SendGameBoard(Player x)
+        public void SendGameBoard(User x)
         {
             BoardPacket Packet = new BoardPacket(GameProtocol.BoardTableGamePacketID(), this);
-            Othello.Server.SendPacket(x.PlayerSocket, Packet.getData());
+            Othello.Server.SendPacket(x.Socket, Packet.getData());
         }
-        public void SendPlayerFirstStuff(Player x)
+        public void SendPlayerFirstStuff(User x)
         {
             //Send if is his turn and his disk color
             //DelayPacket(100);
@@ -132,51 +142,51 @@ namespace Server.Game
         }
         public void SendGameStatsAfterMove()
         {
-            SendPlayerTurn(Player1);
+            SendPlayerTurn(FirstUser);
             DelayPacket(20);
-            SendPlayerTurn(Player2);
+            SendPlayerTurn(SecondUser);
             DelayPacket(20);
-            SendGameBoard(Player1);
+            SendGameBoard(FirstUser);
             DelayPacket(70);
-            SendGameBoard(Player2);
+            SendGameBoard(SecondUser);
             DelayPacket(70);
-            if (Player1.IsHisTurn)
+            if (FirstUser.Player.IsHisTurn)
             {
-                SendLegalMoves(Player1);
+                SendLegalMoves(FirstUser);
             }
             else
             {
-                SendLegalMoves(Player2);
+                SendLegalMoves(SecondUser);
             }
 
         }
-        public Player GetPlayerTurn()
+        public User GetPlayerTurn()
         {
-            if (Player1.IsHisTurn) return Player1;
-            else return Player2;
+            if (FirstUser.Player.IsHisTurn) return FirstUser;
+            else return SecondUser;
         }
-        public Player GetNotPlayerTurn()
+        public User GetNotPlayerTurn()
         {
-            if (Player1.IsHisTurn) return Player2;
-            else return Player1;
+            if (FirstUser.Player.IsHisTurn) return SecondUser;
+            else return FirstUser;
         }
-        private void SendPlayerTurn(Player x)
+        private void SendPlayerTurn(User x)
         {
-            string s = x.IsHisTurn.ToString();
-            GamePacket Message = new GamePacket(GameProtocol.PlayerTurnPacket(),ID, s);
-            Othello.Server.SendPacket(x.PlayerSocket, Message.getData());
+            string s = x.Player.IsHisTurn.ToString();
+            MessageRoomPacket Message = new MessageRoomPacket(GameProtocol.PlayerTurnPacket(),ID, s);
+            Othello.Server.SendPacket(x.Socket, Message.getData());
         }
         public void ChangePlayersTurn()
         {
-            if (Player1.IsHisTurn)
+            if (FirstUser.Player.IsHisTurn)
             {
-                Player1.IsHisTurn = false;
-                Player2.IsHisTurn = true;
+                FirstUser.Player.IsHisTurn = false;
+                SecondUser.Player.IsHisTurn = true;
             }
             else
             {
-                Player1.IsHisTurn = true;
-                Player2.IsHisTurn = false;
+                FirstUser.Player.IsHisTurn = true;
+                SecondUser.Player.IsHisTurn = false;
             }
         }
         public void DelayPacket(int miliseconds)
@@ -185,9 +195,9 @@ namespace Server.Game
         }
         public void SendAllowedMoves()
         {
-            if(Player1.IsHisTurn)
+            if(FirstUser.Player.IsHisTurn)
             {
-                List<BoardPosition> tempList = Gameboard.GetAllLegalMoves(Player1.DiskColor);
+                List<BoardPosition> tempList = Gameboard.GetAllLegalMoves(FirstUser.Player.DiskColor);
                 string tempString = "";
                 int count = 1;
                 foreach(BoardPosition aux in tempList)
@@ -201,13 +211,13 @@ namespace Server.Game
                     tempString += aux.Row.ToString() + ':' + aux.Column+'|';
                     count++;
                 }
-                GamePacket Packet = new GamePacket(GameProtocol.BoardMoves(),ID, tempString);
-                Othello.Server.SendPacket(Player1.PlayerSocket, Packet.getData());
+                MessageRoomPacket Packet = new MessageRoomPacket(GameProtocol.BoardMoves(),ID, tempString);
+                Othello.Server.SendPacket(FirstUser.Socket, Packet.getData());
 
             }
-            else if(Player2.IsHisTurn)
+            else if(SecondUser.Player.IsHisTurn)
             {
-                List<BoardPosition> tempList = Gameboard.GetAllLegalMoves(Player2.DiskColor);
+                List<BoardPosition> tempList = Gameboard.GetAllLegalMoves(SecondUser.Player.DiskColor);
                 string tempString = "";
                 int count = 1;
                 foreach (BoardPosition aux in tempList)
@@ -221,82 +231,45 @@ namespace Server.Game
                     tempString += aux.Row.ToString() + ':' + aux.Column + '|';
                     count++;
                 }
-                GamePacket Packet = new GamePacket(GameProtocol.BoardMoves(),ID, tempString);
-                Othello.Server.SendPacket(Player2.PlayerSocket, Packet.getData());
+                MessageRoomPacket Packet = new MessageRoomPacket(GameProtocol.BoardMoves(),ID, tempString);
+                Othello.Server.SendPacket(SecondUser.Socket, Packet.getData());
             }
         }
         public void SendStartGamePackets()
         {
-            SendPlayerFirstStuff(Player1);
-            SendPlayerFirstStuff(Player2);
+            SendPlayerFirstStuff(FirstUser);
+            SendPlayerFirstStuff(SecondUser);
         }
-        public Player Player1
+        public User FirstUser
         {
-            get
-            {
-                return _Player1;
-            }
-            set
-            {
-                _Player1 = value;
-            }
+            get { return _FirstUser;  }
+            set { _FirstUser = value; }
         }
-        public Player Player2
+        public User SecondUser
         {
-            get
-            {
-                return _Player2;
-            }
-            set
-            {
-                _Player2 = value;
-            }
+            get { return _SecondUser;  }
+            set { _SecondUser = value; }
         }
         public string Name
         {
-            get
-            {
-                return _Name;
-            }
-            set
-            {
-                _Name = value;
-            }
+            get { return _Name;  }
+            set { _Name = value; }
         }
         public GameBoard Gameboard
         {
-            get
-            {
-                return _Gameboard;
-            }
-            set
-            {
-                _Gameboard = value;
-            }
+            get { return _Gameboard;  }
+            set { _Gameboard = value; }
         }
         public List<string> ChatHistory
         {
-            get
-            {
-                return _ChatHistory;
-            }
-
-            set
-            {
-                _ChatHistory = value;
-            }
+            get { return _ChatHistory;  }
+            set { _ChatHistory = value; }
         }
 
         public ushort ID
         {
-            get
-            {
-                return _ID;
-            }
-            set
-            {
-                _ID = value;
-            }
+            get { return _ID;  }
+            set { _ID = value; }
         }
 
         public int GenerateRandom()
@@ -307,23 +280,23 @@ namespace Server.Game
         {
             if (GenerateRandom() == 0)
             {
-                Player1.IsHisTurn = true;
-                Player2.IsHisTurn = false;
-                Player1.DiskColor = 'B';
-                Player2.DiskColor = 'R';
+                FirstUser.Player.IsHisTurn = true;
+                SecondUser.Player.IsHisTurn = false;
+                FirstUser.Player.DiskColor = 'B';
+                SecondUser.Player.DiskColor = 'R';
             }
             else
             {
-                Player1.IsHisTurn = false;
-                Player2.IsHisTurn = true;
-                Player1.DiskColor = 'R';
-                Player2.DiskColor = 'B';
+                FirstUser.Player.IsHisTurn = false;
+                SecondUser.Player.IsHisTurn = true;
+                FirstUser.Player.DiskColor = 'R';
+                SecondUser.Player.DiskColor = 'B';
             }
         }
-        public void SendGameOver(Player x, string message)
+        public void SendGameOver(User x, string message)
         {
-            GamePacket Message = new GamePacket(GameProtocol.GameOverPacket(),ID, message);
-            Othello.Server.SendPacket(x.PlayerSocket, Message.getData());
+            MessagePacket packet = new MessagePacket(GameProtocol.GameOverPacket(), message);
+            Othello.Server.SendPacket(x.Socket, packet.getData());
         }
         public void PlayAgain()
         {
@@ -333,8 +306,19 @@ namespace Server.Game
         }
         public void ResetPlayAgain()
         {
-            Player1.PlayAgain = false;
-            Player2.PlayAgain = false;
+            FirstUser.Player.PlayAgain = false;
+            SecondUser.Player.PlayAgain = false;
+        }
+
+        public bool isAblePlayAgain()
+        {
+            return FirstUser.Player.PlayAgain && SecondUser.Player.PlayAgain;
+        }
+
+        public void resetPlayAgain()
+        {
+            FirstUser.Player.PlayAgain = false;
+            SecondUser.Player.PlayAgain = false;
         }
 
     }

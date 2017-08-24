@@ -15,7 +15,6 @@ namespace Server.Game
         public GameBoard()
         {
             InitBoard();
-            DrawBoard();
         }
         public void InitBoard()
         {
@@ -37,20 +36,7 @@ namespace Server.Game
             Gameboard[4, 3].Color = 'B';
             Gameboard[3, 3].Color = 'R';
         }
-        private void DrawBoard()
-        {
-            Console.WriteLine();
-            Console.WriteLine();
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    Console.Write(Gameboard[i, j].Color + "  ");
-                }
-                Console.WriteLine();
-                Console.WriteLine();
-            }
-        }
+        
         public bool IsMoveLegal(int x, int y, char color)
         {
             for (int yIdx = -1; yIdx < 2; yIdx++)
@@ -121,6 +107,7 @@ namespace Server.Game
         {
             return GetAllLegalMoves(color).Count > 0;
         }
+
         public void TakeMove(int x, int y, char color)
         {
 
@@ -159,7 +146,6 @@ namespace Server.Game
             if (Gameboard[x, y].Color == 'E')
             {
                 Gameboard[x, y].Color = color;
-                DrawBoard();
             }
         }
         private List<BoardPosition> FindToFlip(int x, int y, char color)

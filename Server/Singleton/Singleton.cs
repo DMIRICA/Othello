@@ -16,11 +16,12 @@ namespace Server.Singleton
 
         private DatabaseConnection _DatabaseConnection;
         private static Singleton _Instance;
+        private  ushort _RoomIDHelper;
         public List<Room> ListOfRooms;
         public List<User> ListOfUsersLogged;
 
         public List<Player> ListOfPlayers;
-        public ushort RoomIDHelper;
+        
              
         public static Singleton Instance
         {
@@ -32,14 +33,6 @@ namespace Server.Singleton
                 }
                 return _Instance;
             }
-        }
-
-        public void addNewRoom()
-        {
-            Room room = new Room(ListOfPlayers[0], 
-                ListOfPlayers[1],RoomIDHelper);
-            ListOfRooms.Add(room);
-            RoomIDHelper++;
         }
 
         private Singleton()
@@ -64,6 +57,17 @@ namespace Server.Singleton
             return null;
         }
 
+        public User GetUserLoogedByUsername(string username)
+        {
+            foreach (User u in ListOfUsersLogged)
+            {
+                if (u.Username == username)
+                {
+                    return u;
+                }
+            }
+            return null;
+        }
 
         public DatabaseConnection DatabaseConnection
         {
@@ -71,6 +75,11 @@ namespace Server.Singleton
             set { _DatabaseConnection = value; }
         }
 
+        public ushort RoomIDHelper
+        {
+            get { return _RoomIDHelper; }
+            set { _RoomIDHelper = value; }
+        }
 
         public bool isUserLogged(string username)
         {

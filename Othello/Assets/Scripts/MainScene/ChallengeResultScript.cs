@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Networking.GamePacktes;
+﻿using Assets.Scripts.Networking.Packets;
 using Assets.Scripts.Singleton;
 using System.Collections;
 using System.Collections.Generic;

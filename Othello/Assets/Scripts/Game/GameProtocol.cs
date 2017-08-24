@@ -134,6 +134,36 @@ public static class GameProtocol
     {
         return 407;
     }
+
+    public static ushort LoadGameScene()
+    {
+        return 500;
+    }
+
+    public static ushort PlayerReady()
+    {
+        return 501;
+    }
+
+    public static ushort BackToLobby()
+    {
+        return 995;
+    }
+
+    public static ushort QuitAfterGameOver()
+    {
+        return 996;
+    }
+    public static ushort QuitWhileInGame()
+    {
+        return 997;
+    }
+
+    public static ushort Logout()
+    {
+        return 998;
+    }
+
     public static ushort UserDisconnected()
     {
         return 999;
